@@ -3,36 +3,79 @@ import {
   BRIDGE_STATE_COLLECTION,
   EVENTS_COLLECTION,
 } from "@/src/lib/firebase/collections";
-import { CurrentBridgeState, BridgeStateEvent } from "./bridge-state.types";
+import { CURRENT_BRIDGE_STATE_ID } from "./bridge-state.types";
+import {
+  BridgeStateEventCreate,
+  bridgeStateEventCreateSchema,
+  CurrentBridgeStateSchema,
+  currentBridgeStateSchema,
+} from "./bridge-state.schema";
 
-const BRIDGE_STATE_ID = "current";
+type BridgeStateTransactionContext = {
+  currentState: CurrentBridgeStateSchema | null;
+  saveCurrentState: (state: CurrentBridgeStateSchema) => void;
+  saveEventAndCurrentState: (
+    event: BridgeStateEventCreate,
+    state: CurrentBridgeStateSchema,
+  ) => string;
+};
 
-export async function getCurrentBridgeState(): Promise<CurrentBridgeState | null> {
-  const bridgeState = await db
-    .collection(BRIDGE_STATE_COLLECTION)
-    .doc(BRIDGE_STATE_ID)
-    .get();
+const getCurrentBridgeState =
+  async (): Promise<CurrentBridgeStateSchema | null> => {
+    const bridgeState = await db
+      .collection(BRIDGE_STATE_COLLECTION)
+      .doc(CURRENT_BRIDGE_STATE_ID)
+      .get();
 
-  if (!bridgeState.exists) {
-    return null;
-  }
+    if (!bridgeState.exists) {
+      return null;
+    }
 
-  return bridgeState.data() as CurrentBridgeState;
-}
+    return currentBridgeStateSchema.parse(bridgeState.data());
+  };
 
-export async function saveCurrentBridgeState(
-  state: CurrentBridgeState,
-): Promise<void> {
-  await db
-    .collection(BRIDGE_STATE_COLLECTION)
-    .doc(BRIDGE_STATE_ID)
-    .set(state, { merge: true });
-}
+const runBridgeStateTransaction = async <Result>(
+  handler: (context: BridgeStateTransactionContext) => Result,
+): Promise<Result> => {
+  return db.runTransaction(async (transaction) => {
+    const currentBridgeStateRef = db
+      .collection(BRIDGE_STATE_COLLECTION)
+      .doc(CURRENT_BRIDGE_STATE_ID);
+    const currentBridgeStateSnapshot = await transaction.get(
+      currentBridgeStateRef,
+    );
+    const currentBridgeState = currentBridgeStateSnapshot.exists
+      ? currentBridgeStateSchema.parse(currentBridgeStateSnapshot.data())
+      : null;
 
-export async function saveBridgeStateEvent(
-  event: BridgeStateEvent,
-): Promise<string> {
-  const savedEvent = await db.collection(EVENTS_COLLECTION).add(event);
+    return handler({
+      currentState: currentBridgeState,
+      saveCurrentState: (state) => {
+        transaction.set(
+          currentBridgeStateRef,
+          currentBridgeStateSchema.parse(state),
+          { merge: true },
+        );
+      },
+      saveEventAndCurrentState: (event, state) => {
+        const eventRef = db.collection(EVENTS_COLLECTION).doc();
 
-  return savedEvent.id;
-}
+        transaction.set(eventRef, bridgeStateEventCreateSchema.parse(event));
+        transaction.set(
+          currentBridgeStateRef,
+          currentBridgeStateSchema.parse(state),
+          { merge: true },
+        );
+
+        return eventRef.id;
+      },
+    });
+  });
+};
+
+const bridgeStateRepository = {
+  getCurrentBridgeState,
+  runBridgeStateTransaction,
+};
+
+export default bridgeStateRepository;

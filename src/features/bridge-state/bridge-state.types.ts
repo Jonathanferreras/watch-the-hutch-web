@@ -1,18 +1,28 @@
-export type BridgePosition =
-  | "closed"
-  | "opening"
-  | "open"
-  | "closing"
-  | "unknown";
+export const CURRENT_BRIDGE_STATE_ID = "current";
 
-export type BridgeTraffic =
-  | "light"
-  | "moderate"
-  | "heavy"
-  | "standstill"
-  | "unknown";
+export const BRIDGE_POSITIONS = [
+  "closed",
+  "opening",
+  "open",
+  "closing",
+  "unknown",
+] as const;
 
-export type BridgeStateSource = "device" | "admin";
+export const BRIDGE_TRAFFIC_STATES = [
+  "light",
+  "moderate",
+  "heavy",
+  "standstill",
+  "unknown",
+] as const;
+
+export const BRIDGE_STATE_SOURCES = ["device", "admin"] as const;
+
+export type BridgePosition = (typeof BRIDGE_POSITIONS)[number];
+
+export type BridgeTraffic = (typeof BRIDGE_TRAFFIC_STATES)[number];
+
+export type BridgeStateSource = (typeof BRIDGE_STATE_SOURCES)[number];
 
 export type BridgeStateEvent = {
   id: string;
@@ -30,7 +40,7 @@ export type BridgeStateEvent = {
 };
 
 export type CurrentBridgeState = {
-  id: "current";
+  id: typeof CURRENT_BRIDGE_STATE_ID;
 
   sourceId: string;
   sourceType: BridgeStateSource;

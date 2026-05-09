@@ -1,26 +1,44 @@
 import { z } from "zod";
+import {
+  BRIDGE_POSITIONS,
+  BRIDGE_STATE_SOURCES,
+  BRIDGE_TRAFFIC_STATES,
+  CURRENT_BRIDGE_STATE_ID,
+  BridgePosition,
+  BridgeStateEvent,
+  BridgeStateSource,
+  BridgeTraffic,
+  CurrentBridgeState,
+} from "./bridge-state.types";
 
-export const bridgePositionSchema = z.enum([
-  "closed",
-  "opening",
-  "open",
-  "closing",
-  "unknown",
-]);
+const bridgePositionSchema = z.enum(
+  BRIDGE_POSITIONS,
+) satisfies z.ZodType<BridgePosition>;
 
-export const bridgeTrafficSchema = z.enum([
-  "light",
-  "moderate",
-  "heavy",
-  "standstill",
-  "unknown",
-]);
+const bridgeTrafficSchema = z.enum(
+  BRIDGE_TRAFFIC_STATES,
+) satisfies z.ZodType<BridgeTraffic>;
 
-export const bridgeStateSourceSchema = z.enum(["device", "admin"]);
+const bridgeStateSourceSchema = z.enum(
+  BRIDGE_STATE_SOURCES,
+) satisfies z.ZodType<BridgeStateSource>;
 
 const confidenceSchema = z.number().min(0).max(1);
 
-export const bridgeStateEventSchema = z.object({
+const dateSchema = z.preprocess((value) => {
+  if (
+    value &&
+    typeof value === "object" &&
+    "toDate" in value &&
+    typeof value.toDate === "function"
+  ) {
+    return value.toDate();
+  }
+
+  return value;
+}, z.coerce.date());
+
+const bridgeStateEventSchema = z.object({
   id: z.string().min(1),
 
   sourceId: z.string().min(1),
@@ -32,12 +50,12 @@ export const bridgeStateEventSchema = z.object({
   traffic: bridgeTrafficSchema,
   trafficConfidence: confidenceSchema,
 
-  occurredAt: z.coerce.date(),
-  createdAt: z.coerce.date(),
-});
+  occurredAt: dateSchema,
+  createdAt: dateSchema,
+}) satisfies z.ZodType<BridgeStateEvent>;
 
 export const currentBridgeStateSchema = z.object({
-  id: z.literal("current"),
+  id: z.literal(CURRENT_BRIDGE_STATE_ID),
 
   sourceId: z.string().min(1),
   sourceType: bridgeStateSourceSchema,
@@ -50,12 +68,14 @@ export const currentBridgeStateSchema = z.object({
 
   acceptsDeviceUpdates: z.boolean(),
 
-  updatedAt: z.coerce.date(),
-});
-
-export type BridgeStateEventSchema = z.infer<typeof bridgeStateEventSchema>;
+  updatedAt: dateSchema,
+}) satisfies z.ZodType<CurrentBridgeState>;
 
 export type CurrentBridgeStateSchema = z.infer<typeof currentBridgeStateSchema>;
+
+export const bridgeStateEventCreateSchema = bridgeStateEventSchema.omit({
+  id: true,
+});
 
 export const createBridgeStateEventSchema = bridgeStateEventSchema.omit({
   id: true,
@@ -64,4 +84,8 @@ export const createBridgeStateEventSchema = bridgeStateEventSchema.omit({
 
 export type CreateBridgeStateEventInput = z.infer<
   typeof createBridgeStateEventSchema
+>;
+
+export type BridgeStateEventCreate = z.infer<
+  typeof bridgeStateEventCreateSchema
 >;
