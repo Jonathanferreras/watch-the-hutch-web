@@ -1,6 +1,7 @@
 import repository from "./bridge-state.repository";
 import { CURRENT_BRIDGE_STATE_ID } from "./bridge-state.types";
 import {
+  bridgeStateDeviceUpdatesToggleSchema,
   bridgeStateEventCreateSchema,
   CreateBridgeStateEventInput,
   createBridgeStateEventSchema,
@@ -8,9 +9,65 @@ import {
   CurrentBridgeStateSchema,
 } from "./bridge-state.schema";
 
+type ValidationIssue = {
+  path: string;
+  message: string;
+};
+
+class BridgeStateValidationError extends Error {
+  issues: ValidationIssue[];
+
+  constructor(message: string, issues: ValidationIssue[]) {
+    super(message);
+    this.name = "BridgeStateValidationError";
+    this.issues = issues;
+  }
+}
+
 const logError = (message: string, error: unknown) => {
   console.error(`[BridgeStateService] ${message}`, error);
 };
+
+const validationIssues = (
+  error: { issues: { path: PropertyKey[]; message: string }[] },
+): ValidationIssue[] =>
+  error.issues.map((issue) => ({
+    path: issue.path.join("."),
+    message: issue.message,
+  }));
+
+const parseBridgeStateEventPayload = (
+  payload: unknown,
+): CreateBridgeStateEventInput => {
+  const parsed = createBridgeStateEventSchema.safeParse(payload);
+
+  if (!parsed.success) {
+    throw new BridgeStateValidationError(
+      "Invalid bridge state event payload.",
+      validationIssues(parsed.error),
+    );
+  }
+
+  return parsed.data;
+};
+
+const parseDeviceUpdatesTogglePayload = (payload: unknown): boolean => {
+  const parsed = bridgeStateDeviceUpdatesToggleSchema.safeParse(payload);
+
+  if (!parsed.success) {
+    throw new BridgeStateValidationError(
+      "Invalid device update toggle payload.",
+      validationIssues(parsed.error),
+    );
+  }
+
+  return parsed.data.acceptsDeviceUpdates;
+};
+
+const isValidationError = (
+  error: unknown,
+): error is BridgeStateValidationError =>
+  error instanceof BridgeStateValidationError;
 
 const getCurrentBridgeState =
   async (): Promise<CurrentBridgeStateSchema | null> => {
@@ -18,7 +75,7 @@ const getCurrentBridgeState =
       return await repository.getCurrentBridgeState();
     } catch (error) {
       logError("Failed to retrieve current bridge state.", error);
-      return null;
+      throw error;
     }
   };
 
@@ -79,13 +136,12 @@ const addBridgeStateEvent = async (
     return result;
   } catch (error) {
     logError("Failed to add bridge state event.", error);
-
-    return {
-      eventId: null,
-      currentState: null,
-    };
+    throw error;
   }
 };
+
+const addBridgeStateEventFromPayload = async (payload: unknown) =>
+  addBridgeStateEvent(parseBridgeStateEventPayload(payload));
 
 const updateCurrentBridgeState = async (
   input: CreateBridgeStateEventInput,
@@ -100,9 +156,12 @@ const updateCurrentBridgeState = async (
     return currentState;
   } catch (error) {
     logError("Failed to update current bridge state.", error);
-    return null;
+    throw error;
   }
 };
+
+const updateCurrentBridgeStateFromPayload = async (payload: unknown) =>
+  updateCurrentBridgeState(parseBridgeStateEventPayload(payload));
 
 const toggleAcceptsDeviceUpdates = async (
   acceptsDeviceUpdates: boolean,
@@ -137,15 +196,22 @@ const toggleAcceptsDeviceUpdates = async (
     return nextState;
   } catch (error) {
     logError("Failed to toggle device update permissions.", error);
-    return null;
+    throw error;
   }
 };
+
+const toggleAcceptsDeviceUpdatesFromPayload = async (payload: unknown) =>
+  toggleAcceptsDeviceUpdates(parseDeviceUpdatesTogglePayload(payload));
 
 const bridgeStateService = {
   getCurrentBridgeState,
   addBridgeStateEvent,
+  addBridgeStateEventFromPayload,
   updateCurrentBridgeState,
+  updateCurrentBridgeStateFromPayload,
   toggleAcceptsDeviceUpdates,
+  toggleAcceptsDeviceUpdatesFromPayload,
+  isValidationError,
 };
 
 export default bridgeStateService;

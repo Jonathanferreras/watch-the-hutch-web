@@ -71,6 +71,10 @@ export const currentBridgeStateSchema = z.object({
   updatedAt: dateSchema,
 }) satisfies z.ZodType<CurrentBridgeState>;
 
+export const bridgeStateDeviceUpdatesToggleSchema = z.object({
+  acceptsDeviceUpdates: z.boolean(),
+});
+
 export type CurrentBridgeStateSchema = z.infer<typeof currentBridgeStateSchema>;
 
 export const bridgeStateEventCreateSchema = bridgeStateEventSchema.omit({
@@ -88,4 +92,8 @@ export type CreateBridgeStateEventInput = z.infer<
 
 export type BridgeStateEventCreate = z.infer<
   typeof bridgeStateEventCreateSchema
+>;
+
+export type BridgeStateDeviceUpdatesToggleInput = z.infer<
+  typeof bridgeStateDeviceUpdatesToggleSchema
 >;
