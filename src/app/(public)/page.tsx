@@ -1,4 +1,4 @@
-import { BridgeStatusCard } from "../features/bridge-state/components/bridge-status-card";
+import { BridgeStatusCard } from "@/src/features/bridge-state/components/bridge-status-card";
 
 export default function Home() {
   return (
