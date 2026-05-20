@@ -20,24 +20,26 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 ```txt
 WATCH-THE-HUTCH-WEB/
+├── public/
+│
 ├── src/
-│   ├── api/
+│   ├── app/                         # Next.js App Router: pages, layouts, route handlers, and route-specific UI.
+│   │   ├── admin/
+│   │   │   ├── (protected)/
+│   │   │   │   ├── dashboard/
+│   │   │   └── login/
+│   │   │
+│   │   ├── api/                     # Route handlers.
+│   │   │   ├── bridge-state/
+│   │   │   └── session/
 │   │
-│   ├── app/         # for routing, layouts, route handlers, and route-specific UI.
+│   ├── components/                  # Shared project components
 │   │
-│   ├── components/  # for reusable generic components like buttons, inputs, dialogs, cards, tables, etc.
+│   ├── features/                    # Product/domain-specific code.
+│   │   ├── auth/
+│   │   │
+│   │   └── bridge-state/
 │   │
-│   ├── features/    # for real product domains like auth, billing, orders, users, projects, etc.
-│   │
-│   ├── hooks/
-│   │
-│   ├── lib/         # for app-wide infrastructure: database client, auth config, env validation, API clients, analytics, utilities.
-│   │
-│   ├── styles/
-│   │
-│   ├── tests/
-│   │
-│   ├── types/
-│   │
-│   └── middleware.ts
+│   └── lib/
+│       └── firebase/
 ```
