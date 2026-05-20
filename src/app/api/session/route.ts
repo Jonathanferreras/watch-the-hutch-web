@@ -38,9 +38,18 @@ export async function POST(request: Request) {
 }
 
 export async function DELETE() {
-  const response = NextResponse.json({ ok: true });
+  try {
+    const response = NextResponse.json({ ok: true });
 
-  response.cookies.delete("session");
+    response.cookies.delete("session");
 
-  return response;
+    return response;
+  } catch (error) {
+    logError("SessionRoute", "Failed to clear auth session.", error);
+
+    return NextResponse.json(
+      { error: "Internal Server Error" },
+      { status: 500 },
+    );
+  }
 }
