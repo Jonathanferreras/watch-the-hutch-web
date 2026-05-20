@@ -1,3 +1,4 @@
+import { logError } from "@/src/lib/errors";
 import { AuthSessionPayload } from "./auth.types";
 
 export const setAuthSession = async (
@@ -13,17 +14,17 @@ export const setAuthSession = async (
     const response = await fetch("/api/session", requestOptions);
 
     if (!response.ok) {
-      throw new Error("Failed to fetch bridge state.");
+      throw new Error("Failed to set auth session.");
     }
 
     return true;
   } catch (error) {
-    console.log(error);
+    logError("AuthQueries", "Failed to set auth session.", error);
     return false;
   }
 };
 
-export const endAuthSession = async () => {
+export const endAuthSession = async (): Promise<boolean> => {
   try {
     const response = await fetch("/api/session", {
       method: "DELETE",
@@ -35,7 +36,7 @@ export const endAuthSession = async () => {
 
     return true;
   } catch (error) {
-    console.log(error);
+    logError("AuthQueries", "Failed to clear auth session.", error);
     return false;
   }
 };

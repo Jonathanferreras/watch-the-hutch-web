@@ -1,4 +1,5 @@
 import repository from "./bridge-state.repository";
+import { logError } from "@/src/lib/errors";
 import { CURRENT_BRIDGE_STATE_ID } from "./bridge-state.types";
 import {
   bridgeStateDeviceUpdatesToggleSchema,
@@ -23,10 +24,6 @@ class BridgeStateValidationError extends Error {
     this.issues = issues;
   }
 }
-
-const logError = (message: string, error: unknown) => {
-  console.error(`[BridgeStateService] ${message}`, error);
-};
 
 const validationIssues = (
   error: { issues: { path: PropertyKey[]; message: string }[] },
@@ -74,7 +71,11 @@ const getCurrentBridgeState =
     try {
       return await repository.getCurrentBridgeState();
     } catch (error) {
-      logError("Failed to retrieve current bridge state.", error);
+      logError(
+        "BridgeStateService",
+        "Failed to retrieve current bridge state.",
+        error,
+      );
       throw error;
     }
   };
@@ -135,7 +136,7 @@ const addBridgeStateEvent = async (
 
     return result;
   } catch (error) {
-    logError("Failed to add bridge state event.", error);
+    logError("BridgeStateService", "Failed to add bridge state event.", error);
     throw error;
   }
 };
@@ -155,7 +156,11 @@ const updateCurrentBridgeState = async (
 
     return currentState;
   } catch (error) {
-    logError("Failed to update current bridge state.", error);
+    logError(
+      "BridgeStateService",
+      "Failed to update current bridge state.",
+      error,
+    );
     throw error;
   }
 };
@@ -195,7 +200,11 @@ const toggleAcceptsDeviceUpdates = async (
 
     return nextState;
   } catch (error) {
-    logError("Failed to toggle device update permissions.", error);
+    logError(
+      "BridgeStateService",
+      "Failed to toggle device update permissions.",
+      error,
+    );
     throw error;
   }
 };

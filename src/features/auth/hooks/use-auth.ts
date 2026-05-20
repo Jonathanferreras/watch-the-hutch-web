@@ -6,6 +6,7 @@ import {
   setAuthSession,
 } from "@/src/features/auth/auth.queries";
 import { AuthCredentialsSchema } from "@/src/features/auth/auth.schemas";
+import { toError } from "@/src/lib/errors";
 
 export const useAuth = () => {
   const [success, setSuccess] = useState(false);
@@ -35,10 +36,7 @@ export const useAuth = () => {
       setSuccess(true);
       return true;
     } catch (error) {
-      const normalizedError =
-        error instanceof Error ? error : new Error("Unknown login error.");
-
-      setError(normalizedError);
+      setError(toError(error, "Unknown login error."));
       return false;
     } finally {
       setLoading(false);
@@ -61,10 +59,7 @@ export const useAuth = () => {
 
       return true;
     } catch (error) {
-      const normalizedError =
-        error instanceof Error ? error : new Error("Unknown logout error.");
-
-      setError(normalizedError);
+      setError(toError(error, "Unknown logout error."));
       return false;
     } finally {
       setLoading(false);

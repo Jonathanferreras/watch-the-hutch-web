@@ -1,12 +1,13 @@
 import { z } from "zod";
-import { AuthCredentials, AuthSessionPayload } from "./auth.types";
 
-const authCredentialsSchema = z.object({
+import type { AuthCredentials, AuthSessionPayload } from "./auth.types";
+
+export const authCredentialsSchema = z.object({
   email: z.email(),
   password: z.string(),
 }) satisfies z.ZodType<AuthCredentials>;
 
-const authSessionPayloadSchema = z.object({
+export const authSessionPayloadSchema = z.object({
   token: z.string(),
 }) satisfies z.ZodType<AuthSessionPayload>;
 

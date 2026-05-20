@@ -1,4 +1,5 @@
 import bridgeStateService from "@/src/features/bridge-state/bridge-state.service";
+import { errorMessage, logError } from "@/src/lib/errors";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -19,6 +20,8 @@ const bridgeStateError = (error: unknown, fallbackMessage: string) => {
     return jsonError(error.message, 400, { issues: error.issues });
   }
 
+  logError("BridgeStateRoute", fallbackMessage, error);
+
   return jsonError(fallbackMessage, 500);
 };
 
@@ -27,7 +30,13 @@ export async function GET() {
     const currentState = await bridgeStateService.getCurrentBridgeState();
 
     return Response.json({ currentState });
-  } catch {
+  } catch (error) {
+    logError(
+      "BridgeStateRoute",
+      "Failed to retrieve current bridge state.",
+      error,
+    );
+
     return jsonError("Failed to retrieve current bridge state.", 500);
   }
 }
@@ -38,41 +47,34 @@ export async function POST(request: Request) {
   try {
     body = await readJson(request);
   } catch (error) {
-    return jsonError(
-      error instanceof Error ? error.message : "Invalid JSON request body.",
-      400,
-    );
+    return jsonError(errorMessage(error, "Invalid JSON request body."), 400);
   }
 
-  let result: Awaited<
-    ReturnType<typeof bridgeStateService.addBridgeStateEventFromPayload>
-  >;
-
   try {
-    result = await bridgeStateService.addBridgeStateEventFromPayload(body);
+    const result = await bridgeStateService.addBridgeStateEventFromPayload(body);
+
+    if (!result.eventId) {
+      return Response.json(
+        {
+          accepted: false,
+          reason: "device_updates_disabled",
+          currentState: result.currentState,
+        },
+        { status: 202 },
+      );
+    }
+
+    return Response.json(
+      {
+        accepted: true,
+        eventId: result.eventId,
+        currentState: result.currentState,
+      },
+      { status: 201 },
+    );
   } catch (error) {
     return bridgeStateError(error, "Failed to apply bridge state event.");
   }
-
-  if (!result.eventId) {
-    return Response.json(
-      {
-        accepted: false,
-        reason: "device_updates_disabled",
-        currentState: result.currentState,
-      },
-      { status: 202 },
-    );
-  }
-
-  return Response.json(
-    {
-      accepted: true,
-      eventId: result.eventId,
-      currentState: result.currentState,
-    },
-    { status: 201 },
-  );
 }
 
 export async function PATCH(request: Request) {
@@ -81,23 +83,16 @@ export async function PATCH(request: Request) {
   try {
     body = await readJson(request);
   } catch (error) {
-    return jsonError(
-      error instanceof Error ? error.message : "Invalid JSON request body.",
-      400,
-    );
+    return jsonError(errorMessage(error, "Invalid JSON request body."), 400);
   }
 
-  let currentState: Awaited<
-    ReturnType<typeof bridgeStateService.toggleAcceptsDeviceUpdatesFromPayload>
-  >;
-
   try {
-    currentState = await bridgeStateService.toggleAcceptsDeviceUpdatesFromPayload(
+    const currentState = await bridgeStateService.toggleAcceptsDeviceUpdatesFromPayload(
       body,
     );
+
+    return Response.json({ currentState });
   } catch (error) {
     return bridgeStateError(error, "Failed to update device update toggle.");
   }
-
-  return Response.json({ currentState });
 }

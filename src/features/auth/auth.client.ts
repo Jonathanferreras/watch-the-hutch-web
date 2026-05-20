@@ -1,14 +1,11 @@
 import { signInWithEmailAndPassword, signOut } from "firebase/auth";
 
 import { auth } from "@/src/lib/firebase/auth/client-auth";
+import { logError } from "@/src/lib/errors";
 import {
   AuthCredentialsSchema,
   AuthSessionPayloadSchema,
 } from "./auth.schemas";
-
-const logError = (message: string, error: unknown) => {
-  console.error(`[AuthService] ${message}`, error);
-};
 
 const login = async (
   credentials: AuthCredentialsSchema,
@@ -34,7 +31,7 @@ const login = async (
 
     return { token };
   } catch (error) {
-    logError("Failed to authenticate user.", error);
+    logError("AuthClient", "Failed to authenticate user.", error);
     throw error;
   }
 };
@@ -43,7 +40,7 @@ const logout = async (): Promise<void> => {
   try {
     await signOut(auth);
   } catch (error) {
-    logError("Failed to sign out user.", error);
+    logError("AuthClient", "Failed to sign out user.", error);
     throw error;
   }
 };

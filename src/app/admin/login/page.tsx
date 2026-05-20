@@ -4,6 +4,7 @@ import { SyntheticEvent, useState } from "react";
 import { useRouter } from "next/navigation";
 
 import { useAuth } from "@/src/features/auth/hooks/use-auth";
+import { errorMessage } from "@/src/lib/errors";
 
 export default function AdminLogin() {
   const router = useRouter();
@@ -30,9 +31,7 @@ export default function AdminLogin() {
 
       router.push("/admin/dashboard");
     } catch (error) {
-      setSubmitError(
-        error instanceof Error ? error.message : "Unable to login.",
-      );
+      setSubmitError(errorMessage(error, "Unable to login."));
     }
   };
 
