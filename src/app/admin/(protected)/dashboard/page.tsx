@@ -2,6 +2,8 @@
 
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/src/features/auth/hooks/use-auth";
+import { BridgeStatusCard } from "@/src/features/bridge-state/components/bridge-status-card";
+import { BridgeStateEditor } from "@/src/features/bridge-state/components/bridge-state-editor";
 
 export default function AdminDashboard() {
   const router = useRouter();
@@ -34,6 +36,11 @@ export default function AdminDashboard() {
       </div>
 
       {error ? <p className="text-sm text-red-600">{error.message}</p> : null}
+      <div style={{ maxWidth: "768px" }}>
+        <BridgeStatusCard />
+        <BridgeStateEditor />
+        <br />
+      </div>
     </div>
   );
 }
