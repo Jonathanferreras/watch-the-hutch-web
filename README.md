@@ -22,24 +22,43 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 WATCH-THE-HUTCH-WEB/
 ├── public/
 │
-├── src/
-│   ├── app/                         # Next.js App Router: pages, layouts, route handlers, and route-specific UI.
-│   │   ├── admin/
-│   │   │   ├── (protected)/
-│   │   │   │   ├── dashboard/
-│   │   │   └── login/
-│   │   │
-│   │   ├── api/                     # Route handlers.
-│   │   │   ├── bridge-state/
-│   │   │   └── session/
-│   │
-│   ├── components/                  # Shared project components
-│   │
-│   ├── features/                    # Product/domain-specific code.
-│   │   ├── auth/
-│   │   │
-│   │   └── bridge-state/
-│   │
-│   └── lib/
-│       └── firebase/
+└── src/
+    ├── app/                         # Next.js App Router: pages, layouts, and route-specific UI.
+    │   ├── admin/
+    │   │   ├── (protected)/
+    │   │   │   ├── dashboard/
+    │   │   │   │   └── page.tsx
+    │   │   │   └── layout.tsx
+    │   │   ├── login/
+    │   │   │   └── page.tsx
+    │   │   └── layout.tsx
+    │   ├── globals.css
+    │   ├── layout.tsx
+    │   └── page.tsx
+    │
+    ├── features/                    # Product/domain-specific modules.
+    │   ├── auth/
+    │   │   ├── components/
+    │   │   │   └── auth-provider.tsx
+    │   │   ├── hooks/
+    │   │   │   └── use-auth.ts
+    │   │   ├── auth.service.ts
+    │   │   └── auth.types.ts
+    │   │
+    │   └── bridge-state/
+    │       ├── components/
+    │       │   ├── bridge-state-editor.tsx
+    │       │   └── bridge-status-card.tsx
+    │       ├── hooks/
+    │       │   └── use-bridge-state.ts
+    │       ├── bridge-state.service.ts
+    │       └── bridge-state.types.ts
+    │
+    └── lib/                         # Shared utility functions and database/SDK clients.
+        ├── firebase/
+        │   ├── auth.ts
+        │   ├── collections.ts
+        │   ├── db.ts
+        │   └── sdk.ts
+        └── errors.ts
 ```
