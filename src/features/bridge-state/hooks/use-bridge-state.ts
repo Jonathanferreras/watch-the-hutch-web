@@ -1,13 +1,35 @@
-"use client";
+import { useEffect, useState } from "react";
 
-import { useQuery } from "@tanstack/react-query";
-import { fetchBridgeState } from "@/src/features/bridge-state/bridge-state.queries";
+import { bridgeStateService } from "../bridge-state.service";
+import { toError } from "@/src/lib/errors";
 
 export const useBridgeState = () => {
-  return useQuery({
-    queryKey: ["bridge-state"],
-    queryFn: fetchBridgeState,
-    staleTime: 30_000,
-    refetchInterval: 30_000,
-  });
+  const [data, setData] = useState<any | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<Error | null>(null);
+
+  useEffect(() => {
+    setLoading(true);
+    setError(null);
+
+    const unsubscribe = bridgeStateService.subscribeToBridgeState(
+      (state) => {
+        setData(state);
+        setLoading(false);
+      },
+      (err) => {
+        setError(toError(err, "Bridge state fetch error."));
+        setLoading(false);
+      }
+    );
+
+    return () => unsubscribe();
+  }, []);
+
+
+  return {
+    data,
+    loading,
+    error,
+  };
 };

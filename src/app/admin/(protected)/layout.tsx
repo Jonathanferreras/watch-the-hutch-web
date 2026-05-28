@@ -1,17 +1,33 @@
-// app/admin/(protected)/layout.tsx
-import { redirect } from "next/navigation";
+"use client";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
-import { getAdminUser } from "@/src/features/auth/auth.server";
+import { useAuthContext } from "@/src/features/auth/components/auth-provider";
 
 type AdminLayoutProps = {
   children: React.ReactNode;
 };
 
-export default async function AdminLayout({ children }: AdminLayoutProps) {
-  const user = await getAdminUser();
+export default function AdminLayout({ children }: AdminLayoutProps) {
+  const router = useRouter();
+  const { user, loading } = useAuthContext();
+
+  useEffect(() => {
+    if (!loading && !user) {
+      router.push("/admin/login");
+    }
+  }, [user, loading]);
+
+  if (loading) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <p className="text-gray-500">Loading...</p>
+      </div>
+    );
+  }
 
   if (!user) {
-    redirect("/admin/login");
+    return null;
   }
 
   return <>{children}</>;

@@ -1,7 +1,8 @@
-import { getFirestore } from "firebase-admin/firestore";
-import { initializeFirebaseAdmin } from "./sdk/admin-sdk";
+import { getFirestore } from "firebase/firestore";
 
-const app = initializeFirebaseAdmin();
+import { initializeFirebaseClient } from "./sdk";
+
+const app = initializeFirebaseClient();
 const db = getFirestore(app);
 
 export { db };

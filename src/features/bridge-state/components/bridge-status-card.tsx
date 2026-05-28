@@ -3,9 +3,9 @@
 import { useBridgeState } from "@/src/features/bridge-state/hooks/use-bridge-state";
 
 export function BridgeStatusCard() {
-  const { data, isLoading, error } = useBridgeState();
+  const { data, loading, error } = useBridgeState();
 
-  if (isLoading) {
+  if (loading) {
     return <p>Loading bridge state...</p>;
   }
 
@@ -22,7 +22,7 @@ export function BridgeStatusCard() {
       <h2>Bridge Status</h2>
       <p>Position: {data.position}</p>
       <p>Traffic: {data.traffic}</p>
-      <p>Last Updated: {data.updatedAt.toString()}</p>
+      <p>Last Updated: {data.updatedAt}</p>
     </div>
   );
 }

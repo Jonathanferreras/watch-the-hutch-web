@@ -1,11 +1,6 @@
 import { useState } from "react";
 
-import authClient from "@/src/features/auth/auth.client";
-import {
-  endAuthSession,
-  setAuthSession,
-} from "@/src/features/auth/auth.queries";
-import { AuthCredentialsSchema } from "@/src/features/auth/auth.schemas";
+import { authClient } from "../auth.service";
 import { toError } from "@/src/lib/errors";
 
 export const useAuth = () => {
@@ -14,24 +9,14 @@ export const useAuth = () => {
   const [error, setError] = useState<Error | null>(null);
 
   const login = async (
-    credentials: AuthCredentialsSchema,
+    credentials: any
   ): Promise<boolean> => {
     try {
       setLoading(true);
       setError(null);
       setSuccess(false);
 
-      const token = await authClient.login(credentials);
-
-      if (!token) {
-        throw new Error("Failed to authenticate user.");
-      }
-
-      const sessionCreated = await setAuthSession(token);
-
-      if (!sessionCreated) {
-        throw new Error("Failed to set auth session.");
-      }
+      await authClient.login(credentials);
 
       setSuccess(true);
       return true;
@@ -50,12 +35,6 @@ export const useAuth = () => {
       setSuccess(false);
 
       await authClient.logout();
-
-      const sessionEnded = await endAuthSession();
-
-      if (!sessionEnded) {
-        throw new Error("Failed to end auth session.");
-      }
 
       return true;
     } catch (error) {

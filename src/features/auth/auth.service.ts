@@ -1,15 +1,13 @@
-import { signInWithEmailAndPassword, signOut } from "firebase/auth";
+import { onAuthStateChanged, signInWithEmailAndPassword, signOut, User } from "firebase/auth";
 
-import { auth } from "@/src/lib/firebase/auth/client-auth";
+import { auth } from "@/src/lib/firebase/auth";
 import { logError } from "@/src/lib/errors";
-import {
-  AuthCredentialsSchema,
-  AuthSessionPayloadSchema,
-} from "./auth.schemas";
+
+export type AuthUser = User;
 
 const login = async (
-  credentials: AuthCredentialsSchema,
-): Promise<AuthSessionPayloadSchema> => {
+  credentials: any,
+) => {
   try {
     const { email, password } = credentials;
 
@@ -31,23 +29,24 @@ const login = async (
 
     return { token };
   } catch (error) {
-    logError("AuthClient", "Failed to authenticate user.", error);
+    logError("Auth Service", "Failed to authenticate user.", error);
     throw error;
   }
 };
 
-const logout = async (): Promise<void> => {
+const logout = async () => {
   try {
     await signOut(auth);
   } catch (error) {
-    logError("AuthClient", "Failed to sign out user.", error);
+    logError("Auth Service", "Failed to sign out user.", error);
     throw error;
   }
 };
 
-const authClient = {
+const subscribeToAuthState = (callback: (user: User | null) => void) => onAuthStateChanged(auth, callback)
+
+export const authClient = {
   login,
   logout,
+  subscribeToAuthState
 };
-
-export default authClient;

@@ -1,226 +1,59 @@
-import repository from "./bridge-state.repository";
-import { logError } from "@/src/lib/errors";
-import { CURRENT_BRIDGE_STATE_ID } from "./bridge-state.types";
+import { doc, getDoc, onSnapshot } from "firebase/firestore";
+
+import { db } from "@/src/lib/firebase/db";
 import {
-  bridgeStateDeviceUpdatesToggleSchema,
-  bridgeStateEventCreateSchema,
-  CreateBridgeStateEventInput,
-  createBridgeStateEventSchema,
-  currentBridgeStateSchema,
-  CurrentBridgeStateSchema,
-} from "./bridge-state.schema";
+  BRIDGE_STATE_COLLECTION,
+  EVENTS_COLLECTION,
+} from "@/src/lib/firebase/collections";
+import { CURRENT_BRIDGE_STATE_ID } from "./bridge-state.types";
+import { logError } from "@/src/lib/errors";
 
-type ValidationIssue = {
-  path: string;
-  message: string;
-};
-
-class BridgeStateValidationError extends Error {
-  issues: ValidationIssue[];
-
-  constructor(message: string, issues: ValidationIssue[]) {
-    super(message);
-    this.name = "BridgeStateValidationError";
-    this.issues = issues;
-  }
-}
-
-const validationIssues = (
-  error: { issues: { path: PropertyKey[]; message: string }[] },
-): ValidationIssue[] =>
-  error.issues.map((issue) => ({
-    path: issue.path.join("."),
-    message: issue.message,
-  }));
-
-const parseBridgeStateEventPayload = (
-  payload: unknown,
-): CreateBridgeStateEventInput => {
-  const parsed = createBridgeStateEventSchema.safeParse(payload);
-
-  if (!parsed.success) {
-    throw new BridgeStateValidationError(
-      "Invalid bridge state event payload.",
-      validationIssues(parsed.error),
-    );
-  }
-
-  return parsed.data;
-};
-
-const parseDeviceUpdatesTogglePayload = (payload: unknown): boolean => {
-  const parsed = bridgeStateDeviceUpdatesToggleSchema.safeParse(payload);
-
-  if (!parsed.success) {
-    throw new BridgeStateValidationError(
-      "Invalid device update toggle payload.",
-      validationIssues(parsed.error),
-    );
-  }
-
-  return parsed.data.acceptsDeviceUpdates;
-};
-
-const isValidationError = (
-  error: unknown,
-): error is BridgeStateValidationError =>
-  error instanceof BridgeStateValidationError;
-
-const getCurrentBridgeState =
-  async (): Promise<CurrentBridgeStateSchema | null> => {
-    try {
-      return await repository.getCurrentBridgeState();
-    } catch (error) {
-      logError(
-        "BridgeStateService",
-        "Failed to retrieve current bridge state.",
-        error,
-      );
-      throw error;
-    }
-  };
-
-const addBridgeStateEvent = async (
-  input: CreateBridgeStateEventInput,
-): Promise<{
-  eventId: string | null;
-  currentState: CurrentBridgeStateSchema | null;
-}> => {
+const getCurrentBridgeState = async () => {
   try {
-    const parsed = createBridgeStateEventSchema.parse(input);
-    const result = await repository.runBridgeStateTransaction(
-      ({ currentState, saveEventAndCurrentState }) => {
-        if (
-          parsed.sourceType === "device" &&
-          currentState?.acceptsDeviceUpdates === false
-        ) {
-          return {
-            eventId: null,
-            currentState,
-          };
-        }
+    const docRef = doc(db, BRIDGE_STATE_COLLECTION, CURRENT_BRIDGE_STATE_ID);
+    const bridgeStateSnap = await getDoc(docRef);
 
-        const now = new Date();
-        const event = bridgeStateEventCreateSchema.parse({
-          ...parsed,
-          createdAt: now,
-        });
-        const nextState = currentBridgeStateSchema.parse({
-          id: CURRENT_BRIDGE_STATE_ID,
-          sourceId: event.sourceId,
-          sourceType: event.sourceType,
-          position: event.position,
-          positionConfidence: event.positionConfidence,
-          traffic: event.traffic,
-          trafficConfidence: event.trafficConfidence,
-          acceptsDeviceUpdates:
-            event.sourceType === "admin"
-              ? false
-              : (currentState?.acceptsDeviceUpdates ?? true),
-          updatedAt: now,
-        });
-        const eventId = saveEventAndCurrentState(event, nextState);
-
-        return {
-          eventId,
-          currentState: nextState,
-        };
-      },
-    );
-
-    if (parsed.sourceType === "device" && !result.eventId) {
-      console.info(
-        "[BridgeStateService] Ignored device bridge state event because device updates are disabled.",
-      );
+    if (!bridgeStateSnap.exists()) {
+      return null;
     }
 
-    return result;
+    return bridgeStateSnap.data();
   } catch (error) {
-    logError("BridgeStateService", "Failed to add bridge state event.", error);
+    logError("Bridge State Service", "Failed to authenticate user.", error);
     throw error;
   }
 };
 
-const addBridgeStateEventFromPayload = async (payload: unknown) =>
-  addBridgeStateEvent(parseBridgeStateEventPayload(payload));
+const subscribeToBridgeState = (
+  callback: (state: any | null) => void,
+  onError?: (error: Error) => void
+) => {
+  const docRef = doc(db, BRIDGE_STATE_COLLECTION, CURRENT_BRIDGE_STATE_ID);
 
-const updateCurrentBridgeState = async (
-  input: CreateBridgeStateEventInput,
-): Promise<CurrentBridgeStateSchema | null> => {
-  try {
-    const { currentState } = await addBridgeStateEvent(input);
-
-    if (!currentState) {
-      throw new Error("Bridge state update did not return a current state.");
+  return onSnapshot(
+    docRef,
+    (docSnap) => {
+      if (!docSnap.exists()) {
+        callback(null);
+      } else {
+        const data = docSnap.data()
+        callback({ ...data, updatedAt: data.updatedAt.toDate().toDateString() });
+      }
+    },
+    (error) => {
+      if (onError) onError(error);
     }
-
-    return currentState;
-  } catch (error) {
-    logError(
-      "BridgeStateService",
-      "Failed to update current bridge state.",
-      error,
-    );
-    throw error;
-  }
+  );
 };
 
-const updateCurrentBridgeStateFromPayload = async (payload: unknown) =>
-  updateCurrentBridgeState(parseBridgeStateEventPayload(payload));
+// TODO: Implement with firebase client sdk
+const addBridgeStateEvent = async (newEvent: any) => { };
 
-const toggleAcceptsDeviceUpdates = async (
-  acceptsDeviceUpdates: boolean,
-): Promise<CurrentBridgeStateSchema | null> => {
-  try {
-    const nextState = await repository.runBridgeStateTransaction(
-      ({ currentState, saveCurrentState }) => {
-        if (!currentState) {
-          throw new Error(
-            "Cannot toggle device updates because no current bridge state exists.",
-          );
-        }
+const updateCurrentBridgeState = async (update: any) => { };
 
-        const state = currentBridgeStateSchema.parse({
-          ...currentState,
-          acceptsDeviceUpdates,
-          updatedAt: new Date(),
-        });
+const toggleAcceptsDeviceUpdates = async (acceptsDeviceUpdates: boolean) => { };
 
-        saveCurrentState(state);
-
-        return state;
-      },
-    );
-
-    console.info(
-      `[BridgeStateService] Device updates ${
-        acceptsDeviceUpdates ? "enabled" : "disabled"
-      } by admin.`,
-    );
-
-    return nextState;
-  } catch (error) {
-    logError(
-      "BridgeStateService",
-      "Failed to toggle device update permissions.",
-      error,
-    );
-    throw error;
-  }
-};
-
-const toggleAcceptsDeviceUpdatesFromPayload = async (payload: unknown) =>
-  toggleAcceptsDeviceUpdates(parseDeviceUpdatesTogglePayload(payload));
-
-const bridgeStateService = {
+export const bridgeStateService = {
   getCurrentBridgeState,
-  addBridgeStateEvent,
-  addBridgeStateEventFromPayload,
-  updateCurrentBridgeState,
-  updateCurrentBridgeStateFromPayload,
-  toggleAcceptsDeviceUpdates,
-  toggleAcceptsDeviceUpdatesFromPayload,
-  isValidationError,
+  subscribeToBridgeState
 };
-
-export default bridgeStateService;
