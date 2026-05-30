@@ -1,6 +1,7 @@
 import { useState } from "react";
 
 import { authClient } from "../auth.service";
+import { AuthCredentials } from "../auth.types";
 import { toError } from "@/src/lib/errors";
 
 export const useAuth = () => {
@@ -9,7 +10,7 @@ export const useAuth = () => {
   const [error, setError] = useState<Error | null>(null);
 
   const login = async (
-    credentials: any
+    credentials: AuthCredentials
   ): Promise<boolean> => {
     try {
       setLoading(true);
