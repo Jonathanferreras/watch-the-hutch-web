@@ -22,7 +22,8 @@ export function BridgeStatusCard() {
       <h2>Bridge Status</h2>
       <p>Position: {data.position}</p>
       <p>Traffic: {data.traffic}</p>
-      <p>Last Updated: {data.updatedAt}</p>
+      <p>Last Updated:   {data.updatedAt ? data.updatedAt.toLocaleString() : "Unknown"}
+      </p>
     </div>
   );
 }

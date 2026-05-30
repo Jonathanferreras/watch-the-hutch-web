@@ -5,7 +5,7 @@ import {
   BRIDGE_STATE_COLLECTION,
   EVENTS_COLLECTION,
 } from "@/src/lib/firebase/collections";
-import { CURRENT_BRIDGE_STATE_ID, CurrentBridgeStatePayload } from "./bridge-state.types";
+import { CURRENT_BRIDGE_STATE_ID, CurrentBridgeState, CurrentBridgeStatePayload } from "./bridge-state.types";
 import { logError } from "@/src/lib/errors";
 
 const getCurrentBridgeState = async () => {
@@ -25,7 +25,7 @@ const getCurrentBridgeState = async () => {
 };
 
 const subscribeToBridgeState = (
-  callback: (state: any | null) => void,
+  callback: (state: CurrentBridgeState | null) => void,
   onError?: (error: Error) => void
 ) => {
   const docRef = doc(db, BRIDGE_STATE_COLLECTION, CURRENT_BRIDGE_STATE_ID);
@@ -36,12 +36,16 @@ const subscribeToBridgeState = (
       if (!docSnap.exists()) {
         callback(null);
       } else {
-        const data = docSnap.data()
-        const updatedAt = data.updatedAt
-          ? data.updatedAt.toDate().toDateString()
-          : null
+        const data = docSnap.data() as Omit<CurrentBridgeState, "updatedAt"> & {
+          updatedAt?: { toDate: () => Date };
+        };
 
-        callback({ ...data, updatedAt });
+        callback({
+          ...data,
+          updatedAt: data.updatedAt
+            ? data.updatedAt.toDate()
+            : new Date(),
+        });
       }
     },
     (error) => {
@@ -85,8 +89,8 @@ const updateCurrentBridgeState = async (update: CurrentBridgeStatePayload) => {
 };
 
 // TODO: Implement with firebase client sdk
-const addBridgeStateEvent = async (newEvent: any) => { };
-const toggleAcceptsDeviceUpdates = async (acceptsDeviceUpdates: boolean) => { };
+// const addBridgeStateEvent = async (newEvent: any) => { };
+// const toggleAcceptsDeviceUpdates = async (acceptsDeviceUpdates: boolean) => { };
 
 export const bridgeStateService = {
   getCurrentBridgeState,
