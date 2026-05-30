@@ -6,17 +6,15 @@ import { toError } from "@/src/lib/errors";
 
 export const useBridgeState = () => {
   const [data, setData] = useState<CurrentBridgeState | null>(null);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
-    setLoading(true);
-    setError(null);
-
     const unsubscribe = bridgeStateService.subscribeToBridgeState(
       (state) => {
         setData(state);
         setLoading(false);
+        setError(null);
       },
       (err) => {
         setError(toError(err, "Bridge state fetch error."));
