@@ -16,7 +16,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     if (!loading && !user) {
       router.push("/admin/login");
     }
-  }, [user, loading]);
+  }, [user, loading, router]);
 
   if (loading) {
     return (
