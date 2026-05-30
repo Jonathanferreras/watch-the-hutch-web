@@ -55,3 +55,16 @@ export type CurrentBridgeState = {
 
   updatedAt: Date;
 };
+
+export type CurrentBridgeStatePayload = {
+  sourceId: string;
+  sourceType: BridgeStateSource;
+
+  position: BridgePosition;
+  positionConfidence: number;
+
+  traffic: BridgeTraffic;
+  trafficConfidence: number;
+
+  acceptsDeviceUpdates: boolean;
+};
