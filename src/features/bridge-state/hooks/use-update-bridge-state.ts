@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 import { bridgeStateService } from "../bridge-state.service";
 import { BridgePosition, BridgeTraffic } from "../bridge-state.types";
