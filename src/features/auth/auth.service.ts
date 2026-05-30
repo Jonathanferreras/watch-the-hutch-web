@@ -2,11 +2,12 @@ import { onAuthStateChanged, signInWithEmailAndPassword, signOut, User } from "f
 
 import { auth } from "@/src/lib/firebase/auth";
 import { logError } from "@/src/lib/errors";
+import { AuthCredentials } from "./auth.types";
 
 export type AuthUser = User;
 
 const login = async (
-  credentials: any,
+  credentials: AuthCredentials,
 ) => {
   try {
     const { email, password } = credentials;
