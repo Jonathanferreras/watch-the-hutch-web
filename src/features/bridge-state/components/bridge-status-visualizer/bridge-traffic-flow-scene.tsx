@@ -7,16 +7,28 @@ import { Color, type Mesh } from "three";
 
 import { BridgeTraffic } from "../../bridge-state.types";
 
-export function BridgeTrafficFlowScene({ traffic }: { traffic: BridgeTraffic }) {
+interface BridgeTrafficFlowSceneProps {
+    traffic: {
+        northBound: BridgeTraffic;
+        southBound: BridgeTraffic
+    }
+}
+
+export function BridgeTrafficFlowScene({ traffic }: BridgeTrafficFlowSceneProps) {
     const ROAD_LENGTH = 20;
     const ROAD_WIDTH = 3.5;
     const ROAD_COLOR = "#FFF8F0";
     const ROAD_THICKNESS = 1;
     const GAP_BETWEEN_ROADS = 1.8;
     const TRAFFIC_FLOW_WIDTH = 2.6;
+    const { northBound, southBound } = traffic;
 
-    const { color, speed } = TrafficFlowVisuals[traffic];
-    const edgeColor = new Color(color)
+    const northBoundProperties = TrafficFlowVisuals[northBound];
+    const northBoundEdgeColor = new Color(northBoundProperties.color)
+        .multiplyScalar(0.7)
+        .getStyle()
+    const southBoundProperties = TrafficFlowVisuals[southBound];
+    const southBoundEdgeColor = new Color(southBoundProperties.color)
         .multiplyScalar(0.7)
         .getStyle()
 
@@ -35,21 +47,21 @@ export function BridgeTrafficFlowScene({ traffic }: { traffic: BridgeTraffic }) 
                 <mesh position={[-GAP_BETWEEN_ROADS + 0.2, 0.75, 0]}>
                     <boxGeometry args={[TRAFFIC_FLOW_WIDTH, 0.5, ROAD_LENGTH]} />
                     <meshStandardMaterial
-                        color={color}
+                        color={northBoundProperties.color}
                         transparent
                         opacity={0.55}
-                        emissive={color}
+                        emissive={northBoundProperties.color}
                         emissiveIntensity={0.25}
                     />
-                    <Edges color={edgeColor} />
+                    <Edges color={northBoundEdgeColor} />
                 </mesh>
-                {speed > 0 && <TrafficFlow
+                {northBoundProperties.speed > 0 && <TrafficFlow
                     x={-1.6}
                     length={ROAD_LENGTH}
                     width={TRAFFIC_FLOW_WIDTH}
                     direction="down"
-                    speed={speed}
-                    color={edgeColor}
+                    speed={northBoundProperties.speed}
+                    color={northBoundEdgeColor}
                 />}
 
 
@@ -63,21 +75,21 @@ export function BridgeTrafficFlowScene({ traffic }: { traffic: BridgeTraffic }) 
                     <boxGeometry args={[TRAFFIC_FLOW_WIDTH, 0.5, ROAD_LENGTH]} />
 
                     <meshStandardMaterial
-                        color={color}
+                        color={southBoundProperties.color}
                         transparent
                         opacity={0.55}
-                        emissive={color}
+                        emissive={southBoundProperties.color}
                         emissiveIntensity={0.25}
                     />
-                    <Edges color={edgeColor} />
+                    <Edges color={southBoundEdgeColor} />
                 </mesh>
-                {speed > 0 && <TrafficFlow
+                {southBoundProperties.speed > 0 && <TrafficFlow
                     x={GAP_BETWEEN_ROADS}
                     length={ROAD_LENGTH}
                     width={TRAFFIC_FLOW_WIDTH}
                     direction="up"
-                    speed={speed}
-                    color={edgeColor}
+                    speed={southBoundProperties.speed}
+                    color={southBoundEdgeColor}
                 />}
             </Canvas>
         </div>

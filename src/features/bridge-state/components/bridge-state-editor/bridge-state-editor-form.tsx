@@ -5,14 +5,19 @@ import { useUpdateBridgeState } from "../../hooks/use-update-bridge-state";
 import { errorMessage } from "@/src/lib/errors";
 
 interface BridgeStateEditorFormProps {
-	initialPosition: BridgePosition,
-	initialTraffic: BridgeTraffic
+	initialState: {
+		initialPosition: BridgePosition,
+		initialNorthBoundTraffic: BridgeTraffic,
+		initialSouthBoundTraffic: BridgeTraffic
+	}
 }
 
-export function BridgeStateEditorForm({ initialPosition, initialTraffic }: BridgeStateEditorFormProps) {
+export function BridgeStateEditorForm({ initialState }: BridgeStateEditorFormProps) {
+	const { initialPosition, initialNorthBoundTraffic, initialSouthBoundTraffic } = initialState;
 	const { updateBridgeState, updating } = useUpdateBridgeState();
 	const [position, setPosition] = useState<BridgePosition>(initialPosition);
-	const [traffic, setTraffic] = useState<BridgeTraffic>(initialTraffic);
+	const [northBoundTraffic, setNorthBoundTraffic] = useState<BridgeTraffic>(initialNorthBoundTraffic);
+	const [southBoundTraffic, setSouthBoundTraffic] = useState<BridgeTraffic>(initialSouthBoundTraffic);
 	const [submitError, setSubmitError] = useState("");
 
 	const handleSubmit = async (event: SyntheticEvent<HTMLFormElement>) => {
@@ -20,7 +25,7 @@ export function BridgeStateEditorForm({ initialPosition, initialTraffic }: Bridg
 		setSubmitError("");
 
 		try {
-			await updateBridgeState({ position, traffic });
+			await updateBridgeState({ position, northBoundTraffic, southBoundTraffic });
 		} catch (error) {
 			setSubmitError(errorMessage(error, "Unable to update bridge state."));
 		}
@@ -47,6 +52,7 @@ export function BridgeStateEditorForm({ initialPosition, initialTraffic }: Bridg
 			<h2>Bridge State Editor</h2>
 
 			<form className="flex max-w-sm flex-col gap-3" onSubmit={handleSubmit}>
+				<label htmlFor="bridge-position">Bridge Position</label>
 				<select
 					name="bridge-position"
 					value={position}
@@ -60,12 +66,22 @@ export function BridgeStateEditorForm({ initialPosition, initialTraffic }: Bridg
 						</option>
 					))}
 				</select>
-
+				<label htmlFor="bridge-northbound-traffic">North-Bound Traffic</label>
 				<select
-					name="bridge-traffic"
-					value={traffic}
+					name="bridge-northbound-traffic"
+					value={northBoundTraffic}
 					onChange={(event) =>
-						setTraffic(event.target.value as BridgeTraffic)
+						setNorthBoundTraffic(event.target.value as BridgeTraffic)
+					}
+				>
+					{renderTrafficOptions()}
+				</select>
+				<label htmlFor="bridge-northbound-traffic">South-Bound Traffic</label>
+				<select
+					name="bridge-southbound-traffic"
+					value={southBoundTraffic}
+					onChange={(event) =>
+						setSouthBoundTraffic(event.target.value as BridgeTraffic)
 					}
 				>
 					{renderTrafficOptions()}

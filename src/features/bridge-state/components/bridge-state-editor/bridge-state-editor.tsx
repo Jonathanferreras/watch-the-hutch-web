@@ -12,5 +12,10 @@ export function BridgeStateEditor() {
         return <p>Unable to load bridge state.</p>;
     }
 
-    return <BridgeStateEditorForm initialPosition={data.position} initialTraffic={data.traffic} />;
+    return <BridgeStateEditorForm initialState={{
+        initialPosition: data.position,
+        initialNorthBoundTraffic: data.northBoundTraffic,
+        initialSouthBoundTraffic: data.southBoundTraffic
+    }}
+    />;
 }

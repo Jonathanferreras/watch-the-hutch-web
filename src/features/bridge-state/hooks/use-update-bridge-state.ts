@@ -7,7 +7,9 @@ import { toError } from "@/src/lib/errors";
 
 interface UpdateBridgeStateParams {
     position: BridgePosition;
-    traffic: BridgeTraffic;
+    northBoundTraffic: BridgeTraffic;
+    southBoundTraffic: BridgeTraffic;
+
 }
 
 export const useUpdateBridgeState = () => {
@@ -15,7 +17,7 @@ export const useUpdateBridgeState = () => {
     const [updating, setUpdating] = useState(false);
     const [error, setError] = useState<Error | null>(null);
 
-    const updateBridgeState = async ({ position, traffic }: UpdateBridgeStateParams) => {
+    const updateBridgeState = async ({ position, northBoundTraffic, southBoundTraffic }: UpdateBridgeStateParams) => {
         if (!user?.uid) {
             throw new Error("You must be logged in to update bridge state.");
         }
@@ -26,9 +28,11 @@ export const useUpdateBridgeState = () => {
         try {
             await bridgeStateService.updateCurrentBridgeState({
                 position,
-                traffic,
                 positionConfidence: 1.0,
-                trafficConfidence: 1.0,
+                northBoundTraffic,
+                northBoundTrafficConfidence: 1.0,
+                southBoundTraffic,
+                southBoundTrafficConfidence: 1.0,
                 sourceId: user.uid,
                 sourceType: "admin",
                 acceptsDeviceUpdates: false,

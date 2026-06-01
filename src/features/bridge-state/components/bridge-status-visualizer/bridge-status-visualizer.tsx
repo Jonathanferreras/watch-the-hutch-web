@@ -9,8 +9,8 @@ import { useBridgeState } from "../../hooks/use-bridge-state";
 export function BridgeStatusVisualizer({ state }: { state: CurrentBridgeState }) {
     const { data } = useBridgeState();
 
-    if (state.position === BRIDGE_POSITION.CLOSED && data?.traffic) {
-        return <BridgeTrafficFlowScene traffic={data.traffic} />
+    if (state.position === BRIDGE_POSITION.CLOSED && data?.northBoundTraffic && data.southBoundTraffic) {
+        return <BridgeTrafficFlowScene traffic={{ northBound: data.northBoundTraffic, southBound: data.southBoundTraffic }} />
     } else if (state.position === BRIDGE_POSITION.OPENING || state.position === BRIDGE_POSITION.CLOSING) {
         return <BridgeTransitionScene />
     } else if (state.position === BRIDGE_POSITION.OPEN) {

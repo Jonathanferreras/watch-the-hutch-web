@@ -74,8 +74,11 @@ const updateCurrentBridgeState = async (update: CurrentBridgeStatePayload) => {
       position: update.position,
       positionConfidence: update.positionConfidence,
 
-      traffic: update.traffic,
-      trafficConfidence: update.trafficConfidence,
+      northBoundTraffic: update.northBoundTraffic,
+      northBoundTrafficConfidence: update.northBoundTrafficConfidence,
+
+      southBoundTraffic: update.southBoundTraffic,
+      southBoundTrafficConfidence: update.southBoundTrafficConfidence,
 
       occurredAt: serverTimestamp(),
       createdAt: serverTimestamp(),

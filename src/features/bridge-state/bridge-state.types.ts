@@ -58,8 +58,11 @@ export type CurrentBridgeState = {
   position: BridgePosition;
   positionConfidence: number;
 
-  traffic: BridgeTraffic;
-  trafficConfidence: number;
+  northBoundTraffic: BridgeTraffic;
+  northBoundTrafficConfidence: number;
+
+  southBoundTraffic: BridgeTraffic;
+  southBoundTrafficConfidence: number;
 
   acceptsDeviceUpdates: boolean;
 
@@ -73,8 +76,11 @@ export type CurrentBridgeStatePayload = {
   position: BridgePosition;
   positionConfidence: number;
 
-  traffic: BridgeTraffic;
-  trafficConfidence: number;
+  northBoundTraffic: BridgeTraffic;
+  northBoundTrafficConfidence: number;
+
+  southBoundTraffic: BridgeTraffic;
+  southBoundTrafficConfidence: number;
 
   acceptsDeviceUpdates: boolean;
 };
