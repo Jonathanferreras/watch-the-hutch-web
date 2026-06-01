@@ -21,7 +21,8 @@ export function BridgeStatusCard() {
         <div className="rounded-xl p-2 overflow-hidden border">
             <h2>Bridge Status</h2>
             <p>Position: {data.position}</p>
-            <p>Traffic: {data.traffic}</p>
+            <p>North-Bound Traffic: {data.northBoundTraffic}</p>
+            <p>South-Bound Traffic: {data.southBoundTraffic}</p>
             <p>Last Updated:   {data.updatedAt ? data.updatedAt.toLocaleString() : "Unknown"}
             </p>
         </div>
