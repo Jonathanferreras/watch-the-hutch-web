@@ -38,6 +38,7 @@ export default function AdminDashboard() {
       {error ? <p className="text-sm text-red-600">{error.message}</p> : null}
       <div style={{ maxWidth: "768px" }}>
         <BridgeStatusCard />
+        <br />
         <BridgeStateEditor />
         <br />
       </div>
