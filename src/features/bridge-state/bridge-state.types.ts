@@ -1,28 +1,38 @@
 export const CURRENT_BRIDGE_STATE_ID = "current";
 
-export const BRIDGE_POSITIONS = [
-  "closed",
-  "opening",
-  "open",
-  "closing",
-  "unknown",
-] as const;
+export const BRIDGE_POSITION = {
+  CLOSED: "closed",
+  OPENING: "opening",
+  OPEN: "open",
+  CLOSING: "closing",
+  UNKNOWN: "unknown",
+} as const;
 
-export const BRIDGE_TRAFFIC_STATES = [
-  "light",
-  "moderate",
-  "heavy",
-  "standstill",
-  "unknown",
-] as const;
+export const BRIDGE_TRAFFIC = {
+  LIGHT: "light",
+  MODERATE: "moderate",
+  HEAVY: "heavy",
+  STANDSTILL: "standstill",
+  UNKNOWN: "unknown",
+} as const;
 
-export const BRIDGE_STATE_SOURCES = ["device", "admin"] as const;
+export const BRIDGE_STATE_SOURCE = {
+  DEVICE: "device",
+  ADMIN: "admin",
+} as const;
 
-export type BridgePosition = (typeof BRIDGE_POSITIONS)[number];
+export const BRIDGE_POSITIONS = Object.values(BRIDGE_POSITION);
+export const BRIDGE_TRAFFIC_STATES = Object.values(BRIDGE_TRAFFIC);
+export const BRIDGE_STATE_SOURCES = Object.values(BRIDGE_STATE_SOURCE);
 
-export type BridgeTraffic = (typeof BRIDGE_TRAFFIC_STATES)[number];
+export type BridgePosition =
+  (typeof BRIDGE_POSITION)[keyof typeof BRIDGE_POSITION];
 
-export type BridgeStateSource = (typeof BRIDGE_STATE_SOURCES)[number];
+export type BridgeTraffic =
+  (typeof BRIDGE_TRAFFIC)[keyof typeof BRIDGE_TRAFFIC];
+
+export type BridgeStateSource =
+  (typeof BRIDGE_STATE_SOURCE)[keyof typeof BRIDGE_STATE_SOURCE];
 
 export type BridgeStateEvent = {
   id: string;
