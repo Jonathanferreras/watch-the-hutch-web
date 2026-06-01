@@ -1,4 +1,4 @@
-import { useBridgeState } from "../hooks/use-bridge-state";
+import { useBridgeState } from "../../hooks/use-bridge-state";
 import { BridgeStateEditorForm } from "./bridge-state-editor-form";
 
 export function BridgeStateEditor() {

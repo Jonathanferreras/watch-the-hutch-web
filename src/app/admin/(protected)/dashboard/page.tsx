@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/src/features/auth/hooks/use-auth";
 import { BridgeStatusCard } from "@/src/features/bridge-state/components/bridge-status-card";
-import { BridgeStateEditor } from "@/src/features/bridge-state/components/bridge-state-editor";
+import { BridgeStateEditor } from "@/src/features/bridge-state/components/bridge-state-editor/bridge-state-editor";
 
 export default function AdminDashboard() {
   const router = useRouter();
