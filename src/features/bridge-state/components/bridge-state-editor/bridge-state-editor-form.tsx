@@ -1,6 +1,6 @@
 import { SyntheticEvent, useState } from "react";
 
-import { BRIDGE_POSITIONS, BRIDGE_TRAFFIC_STATES, BridgePosition, BridgeTraffic } from "../../bridge-state.types";
+import { BRIDGE_POSITION, BRIDGE_POSITIONS, BRIDGE_TRAFFIC, BRIDGE_TRAFFIC_STATES, BridgePosition, BridgeTraffic } from "../../bridge-state.types";
 import { useUpdateBridgeState } from "../../hooks/use-update-bridge-state";
 import { errorMessage } from "@/src/lib/errors";
 
@@ -25,6 +25,22 @@ export function BridgeStateEditorForm({ initialPosition, initialTraffic }: Bridg
 			setSubmitError(errorMessage(error, "Unable to update bridge state."));
 		}
 	};
+
+	const renderTrafficOptions = () => {
+		if (position === BRIDGE_POSITION.CLOSED || position === BRIDGE_POSITION.UNKNOWN) {
+			return (BRIDGE_TRAFFIC_STATES.map((traf) => (
+				<option key={traf} value={traf}>
+					{traf}
+				</option>
+			)))
+		} else {
+			return ([BRIDGE_TRAFFIC.STANDSTILL, BRIDGE_TRAFFIC.UNKNOWN].map((traf) => (
+				<option key={traf} value={traf}>
+					{traf}
+				</option>
+			)))
+		}
+	}
 
 	return (
 		<div className="rounded-xl p-2 overflow-hidden border">
@@ -52,11 +68,7 @@ export function BridgeStateEditorForm({ initialPosition, initialTraffic }: Bridg
 						setTraffic(event.target.value as BridgeTraffic)
 					}
 				>
-					{BRIDGE_TRAFFIC_STATES.map((traf) => (
-						<option key={traf} value={traf}>
-							{traf}
-						</option>
-					))}
+					{renderTrafficOptions()}
 				</select>
 
 				<button className="bg-blue-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 border-blue-700 hover:border-blue-500 rounded" disabled={updating} type="submit">
