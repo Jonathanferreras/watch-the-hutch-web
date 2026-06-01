@@ -6,16 +6,51 @@ import { BridgeTransitionScene } from "./bridge-transition-scene";
 import { BridgeOpenScene } from "./bridge-open-scene";
 import { useBridgeState } from "../../hooks/use-bridge-state";
 
-export function BridgeStatusVisualizer({ state }: { state: CurrentBridgeState }) {
+interface BridgeStatusVisualizerProps {
+    state: CurrentBridgeState;
+}
+
+export function BridgeStatusVisualizer({ state }: BridgeStatusVisualizerProps) {
     const { data } = useBridgeState();
 
-    if (state.position === BRIDGE_POSITION.CLOSED && data?.northBoundTraffic && data.southBoundTraffic) {
-        return <BridgeTrafficFlowScene traffic={{ northBound: data.northBoundTraffic, southBound: data.southBoundTraffic }} />
-    } else if (state.position === BRIDGE_POSITION.OPENING || state.position === BRIDGE_POSITION.CLOSING) {
-        return <BridgeTransitionScene />
-    } else if (state.position === BRIDGE_POSITION.OPEN) {
-        return <BridgeOpenScene />
-    } else {
-        return (<></>);
+    if (!data) {
+        return <div className="text-center">Loading bridge data...</div>;
     }
+
+    const renderScene = () => {
+        switch (state.position) {
+            case BRIDGE_POSITION.CLOSED:
+                const { northBoundTraffic, northBoundTrafficConfidence, southBoundTraffic, southBoundTrafficConfidence } = data;
+
+                if (northBoundTraffic && southBoundTraffic) {
+                    return (
+                        <BridgeTrafficFlowScene
+                            traffic={{
+                                northBoundTraffic,
+                                northBoundTrafficConfidence,
+                                southBoundTraffic,
+                                southBoundTrafficConfidence
+                            }}
+                        />
+                    );
+                }
+                return null;
+
+            case BRIDGE_POSITION.OPENING:
+            case BRIDGE_POSITION.CLOSING:
+                return <BridgeTransitionScene />;
+
+            case BRIDGE_POSITION.OPEN:
+                return <BridgeOpenScene />;
+
+            default:
+                return null;
+        }
+    };
+
+    return (
+        <>
+            {renderScene()}
+        </>
+    );
 }

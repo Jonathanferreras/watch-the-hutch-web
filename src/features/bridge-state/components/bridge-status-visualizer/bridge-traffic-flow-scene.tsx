@@ -9,8 +9,10 @@ import { BridgeTraffic } from "../../bridge-state.types";
 
 interface BridgeTrafficFlowSceneProps {
     traffic: {
-        northBound: BridgeTraffic;
-        southBound: BridgeTraffic
+        northBoundTraffic: BridgeTraffic;
+        northBoundTrafficConfidence: number;
+        southBoundTraffic: BridgeTraffic;
+        southBoundTrafficConfidence: number;
     }
 }
 
@@ -21,13 +23,13 @@ export function BridgeTrafficFlowScene({ traffic }: BridgeTrafficFlowSceneProps)
     const ROAD_THICKNESS = 1;
     const GAP_BETWEEN_ROADS = 1.8;
     const TRAFFIC_FLOW_WIDTH = 2.6;
-    const { northBound, southBound } = traffic;
+    const { northBoundTraffic, northBoundTrafficConfidence, southBoundTraffic, southBoundTrafficConfidence } = traffic;
 
-    const northBoundProperties = TrafficFlowVisuals[northBound];
+    const northBoundProperties = TrafficFlowVisuals[northBoundTraffic];
     const northBoundEdgeColor = new Color(northBoundProperties.color)
         .multiplyScalar(0.7)
         .getStyle()
-    const southBoundProperties = TrafficFlowVisuals[southBound];
+    const southBoundProperties = TrafficFlowVisuals[southBoundTraffic];
     const southBoundEdgeColor = new Color(southBoundProperties.color)
         .multiplyScalar(0.7)
         .getStyle()
@@ -89,7 +91,7 @@ export function BridgeTrafficFlowScene({ traffic }: BridgeTrafficFlowSceneProps)
                 />}
             </Canvas>
         </div>
-    )
+    );
 }
 
 interface TrafficFlowProps {
@@ -114,7 +116,6 @@ function TrafficFlow({ x, length, width, direction, speed, color }: TrafficFlowP
         const offset = ((time * speed) % (travelDistance)) - (travelDistance) / 2;
 
         ref.current.position.z = offset * (direction == "up" ? -1 : 1)
-
     });
 
     return (
@@ -150,5 +151,4 @@ const TrafficFlowVisuals: Record<BridgeTraffic, { speed: number, color: string }
         speed: 0,
         color: "#9CA3AF",
     },
-
 }
