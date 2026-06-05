@@ -1,30 +1,26 @@
-import { BridgeTraffic } from "../../bridge-state.types";
+import { CurrentBridgeState } from "../../bridge-state.types";
 import { TrafficCard } from "./traffic-card";
 
 interface BridgeTrafficOverviewProps {
-    traffic: {
-        northBoundTraffic: BridgeTraffic;
-        northBoundTrafficConfidence: number;
-        southBoundTraffic: BridgeTraffic;
-        southBoundTrafficConfidence: number;
-    };
+    state: CurrentBridgeState
 }
 
-export function BridgeTrafficOverview({ traffic }: BridgeTrafficOverviewProps) {
+export function BridgeTrafficOverview({ state }: BridgeTrafficOverviewProps) {
+    const { northBoundTraffic, northBoundTrafficConfidence, southBoundTraffic, southBoundTrafficConfidence } = state;
     return (
-        <div className="relative z-10 -mt-12 grid grid-cols-1 gap-3 px-4 pb-4 sm:grid-cols-2">
+        <section className="relative z-10 -mt-12 grid grid-cols-1 gap-3 px-4 pb-4 sm:grid-cols-2">
             <TrafficCard
                 direction="NorthBound"
-                intensity={traffic.northBoundTraffic}
-                confidence={traffic.northBoundTrafficConfidence}
+                intensity={northBoundTraffic}
+                confidence={northBoundTrafficConfidence}
             />
 
             <TrafficCard
                 direction="SouthBound"
-                intensity={traffic.southBoundTraffic}
-                confidence={traffic.southBoundTrafficConfidence}
+                intensity={southBoundTraffic}
+                confidence={southBoundTrafficConfidence}
             />
-        </div>
+        </section>
     );
 }
 

@@ -20,18 +20,11 @@ export default function Home() {
     return <p>No bridge state available.</p>;
   }
 
-  const { position, northBoundTraffic, northBoundTrafficConfidence, southBoundTraffic, southBoundTrafficConfidence } = data;
-
   return (
     <main className="pt-16">
-      <BridgeStateOverview state={{ position }} />
+      <BridgeStateOverview state={data} />
       <BridgeStatusVisualizer state={data} />
-      <BridgeTrafficOverview traffic={{
-        northBoundTraffic,
-        northBoundTrafficConfidence,
-        southBoundTraffic,
-        southBoundTrafficConfidence
-      }} />
+      <BridgeTrafficOverview state={data} />
     </main>
   );
 }

@@ -1,66 +1,176 @@
-import { BRIDGE_POSITION, BridgePosition } from "../bridge-state.types"
+import {
+    BRIDGE_POSITION,
+    BRIDGE_TRAFFIC,
+    BridgeTraffic,
+    CurrentBridgeState,
+} from "../bridge-state.types";
 
 interface BridgeStateOverviewProps {
-    state: {
-        position: BridgePosition
-    }
+    state: CurrentBridgeState;
 }
+
+type TrafficDirection = "northbound" | "southbound" | "both";
+
+type WorstTraffic = {
+    traffic: BridgeTraffic;
+    direction: TrafficDirection;
+};
 
 export function BridgeStateOverview({ state }: BridgeStateOverviewProps) {
-    const { position } = state;
-    const { color, statusColor } = BridgeStateVisuals[position];
+    const { position, northBoundTraffic, southBoundTraffic } = state;
 
-    const renderStatusMessage = () => {
-        switch (position) {
-            case BRIDGE_POSITION.CLOSED:
-                return "Normal Operation"
-            case BRIDGE_POSITION.OPENING:
-            case BRIDGE_POSITION.CLOSING:
-                return "Please wait..."
-
-            case BRIDGE_POSITION.OPEN:
-                return "Boat Crossing"
-
-            case BRIDGE_POSITION.UNKNOWN:
-                return "Status Unavailable"
-            default:
-                return null;
+    function getTrafficSummary() {
+        if (position === BRIDGE_POSITION.UNKNOWN) {
+            return {
+                emphasis: TrafficVisuals.unknown.label,
+                subtitle: "Waiting for a reliable bridge update.",
+                color: TrafficVisuals.unknown.color,
+            };
         }
+
+        if (position !== BRIDGE_POSITION.CLOSED) {
+            return {
+                emphasis: "Stopped",
+                subtitle: "Bridge activity in progress.",
+                color: TrafficVisuals.standstill.color,
+            };
+        }
+
+        const worstTraffic = getWorstTraffic();
+
+        if (northBoundTraffic !== southBoundTraffic) {
+            return {
+                emphasis: "Mixed",
+                subtitle: getMixedTrafficSubtitle(worstTraffic),
+                color: TrafficVisuals[worstTraffic.traffic].color,
+            };
+        }
+
+        return {
+            emphasis: TrafficVisuals[worstTraffic.traffic].label,
+            subtitle: getTrafficSubtitle(worstTraffic.traffic),
+            color: TrafficVisuals[worstTraffic.traffic].color,
+        };
     }
 
+    function getWorstTraffic(): WorstTraffic {
+        const northWeight = TrafficVisuals[northBoundTraffic].weight;
+        const southWeight = TrafficVisuals[southBoundTraffic].weight;
+
+        if (northWeight === southWeight) {
+            return {
+                traffic: northBoundTraffic,
+                direction: "both",
+            };
+        }
+
+        if (northWeight > southWeight) {
+            return {
+                traffic: northBoundTraffic,
+                direction: "northbound",
+            };
+        }
+
+        return {
+            traffic: southBoundTraffic,
+            direction: "southbound",
+        };
+    }
+
+    function getMixedTrafficSubtitle(worstTraffic: WorstTraffic): string {
+        const direction = getDirectionLabel(worstTraffic.direction);
+
+        if (worstTraffic.traffic === BRIDGE_TRAFFIC.UNKNOWN) {
+            return `Waiting for a reliable ${worstTraffic.direction} update.`;
+        }
+
+        if (worstTraffic.traffic === BRIDGE_TRAFFIC.STANDSTILL) {
+            return `${direction} traffic is stopped.`;
+        }
+
+        if (worstTraffic.traffic === BRIDGE_TRAFFIC.HEAVY) {
+            return `Heavier delays ${worstTraffic.direction}.`;
+        }
+
+        if (worstTraffic.traffic === BRIDGE_TRAFFIC.MODERATE) {
+            return `Slight slowdown ${worstTraffic.direction}.`;
+        }
+
+        return `${direction} traffic is moving better.`;
+    }
+
+    function getTrafficSubtitle(traffic: BridgeTraffic): string {
+        if (traffic === BRIDGE_TRAFFIC.UNKNOWN) {
+            return "Waiting for a reliable traffic update.";
+        }
+
+        if (traffic === BRIDGE_TRAFFIC.LIGHT) {
+            return "Both directions are moving smoothly.";
+        }
+
+        return `${TrafficVisuals[traffic].label} traffic in both directions.`;
+    }
+
+    function getDirectionLabel(direction: TrafficDirection): string {
+        if (direction === "northbound") {
+            return "Northbound";
+        }
+
+        if (direction === "southbound") {
+            return "Southbound";
+        }
+
+        return "Both directions";
+    }
+
+    const summary = getTrafficSummary();
+
     return (
-        <div className="flex flex-col justify-center items-center">
-            <div className="flex justify-center items-center mt-10">
-                {position !== BRIDGE_POSITION.UNKNOWN && <span className="animate-pulse inline-block h-4 w-4 rounded-full mr-2" style={{ backgroundColor: statusColor }}></span>}
-                <h1 className="text-center font-bold text-xl" style={{ color }}>BRIDGE {position.toUpperCase()}</h1>
-            </div>
-            <div>
-                <p className="text-gray-500">{renderStatusMessage()}</p>
-            </div>
-        </div>
-    )
+        <section className="flex flex-col items-center justify-center px-4 text-center">
+            <h1 className="mt-10 text-4xl font-bold leading-tight">
+                <span style={{ color: summary.color }}>
+                    {summary.emphasis} Traffic
+                </span>
+            </h1>
+
+            <p className="max-w-xs text-md text-slate-500">
+                {summary.subtitle}
+            </p>
+        </section>
+    );
 }
 
-const BridgeStateVisuals: Record<BridgePosition, { color: string, statusColor?: string }> = {
-    closed: {
-        color: "#329579ff",
-        statusColor: "#38caa1ff"
+const TrafficVisuals: Record<
+    BridgeTraffic,
+    {
+        color: string;
+        label: string;
+        weight: number;
+    }
+> = {
+    light: {
+        color: "#21D19F",
+        label: "Great",
+        weight: 1,
     },
-    opening: {
+    moderate: {
+        color: "#FACC15",
+        label: "Moderate",
+        weight: 2,
+    },
+    heavy: {
         color: "#F97316",
-        statusColor: "#ff8d3bff"
-
+        label: "Heavy",
+        weight: 3,
     },
-    open: {
+    standstill: {
         color: "#EF4444",
-        statusColor: "#ff5858ff"
-    },
-    closing: {
-        color: "#F97316",
-        statusColor: "#ff8d3bff"
+        label: "Backed up",
+        weight: 4,
     },
     unknown: {
         color: "#9CA3AF",
+        label: "Unclear",
+        weight: 0,
     },
-
-}
+};

@@ -23,7 +23,7 @@ export function BridgeTrafficFlowScene({ traffic }: BridgeTrafficFlowSceneProps)
     const ROAD_THICKNESS = 1;
     const GAP_BETWEEN_ROADS = 1.8;
     const TRAFFIC_FLOW_WIDTH = 2.6;
-    const { northBoundTraffic, northBoundTrafficConfidence, southBoundTraffic, southBoundTrafficConfidence } = traffic;
+    const { northBoundTraffic, southBoundTraffic } = traffic;
 
     const northBoundProperties = TrafficFlowVisuals[northBoundTraffic];
     const northBoundEdgeColor = new Color(northBoundProperties.color)
