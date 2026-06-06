@@ -24,11 +24,32 @@ export function BridgeStateEditorForm({ initialState }: BridgeStateEditorFormPro
 		event.preventDefault();
 		setSubmitError("");
 
+		const nextNorth = getEffectiveTraffic(northBoundTraffic);
+		const nextSouth = getEffectiveTraffic(southBoundTraffic);
+
+		setNorthBoundTraffic(nextNorth);
+		setSouthBoundTraffic(nextSouth);
+
 		try {
-			await updateBridgeState({ position, northBoundTraffic, southBoundTraffic });
+			await updateBridgeState({
+				position,
+				northBoundTraffic: nextNorth,
+				southBoundTraffic: nextSouth,
+			});
 		} catch (error) {
 			setSubmitError(errorMessage(error, "Unable to update bridge state."));
 		}
+	};
+
+	const getEffectiveTraffic = (traffic: BridgeTraffic) => {
+		if (
+			position !== BRIDGE_POSITION.CLOSED &&
+			traffic !== BRIDGE_TRAFFIC.STANDSTILL &&
+			traffic !== BRIDGE_TRAFFIC.UNKNOWN
+		) {
+			return BRIDGE_TRAFFIC.STANDSTILL;
+		}
+		return traffic;
 	};
 
 	const renderTrafficOptions = () => {
