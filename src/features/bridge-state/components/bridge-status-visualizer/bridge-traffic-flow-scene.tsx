@@ -6,6 +6,7 @@ import { Edges } from "@react-three/drei"
 import { Color, type Mesh } from "three";
 
 import { BridgeTraffic } from "../../bridge-state.types";
+import { TRAFFIC_CONFIG } from "../../bridge-state.constants";
 
 interface BridgeTrafficFlowSceneProps {
     traffic: {
@@ -25,11 +26,11 @@ export function BridgeTrafficFlowScene({ traffic }: BridgeTrafficFlowSceneProps)
     const TRAFFIC_FLOW_WIDTH = 2.6;
     const { northBoundTraffic, southBoundTraffic } = traffic;
 
-    const northBoundProperties = TrafficFlowVisuals[northBoundTraffic];
+    const northBoundProperties = TRAFFIC_CONFIG[northBoundTraffic];
     const northBoundEdgeColor = new Color(northBoundProperties.color)
         .multiplyScalar(0.7)
         .getStyle()
-    const southBoundProperties = TrafficFlowVisuals[southBoundTraffic];
+    const southBoundProperties = TRAFFIC_CONFIG[southBoundTraffic];
     const southBoundEdgeColor = new Color(southBoundProperties.color)
         .multiplyScalar(0.7)
         .getStyle()
@@ -128,27 +129,4 @@ function TrafficFlow({ x, length, width, direction, speed, color }: TrafficFlowP
             />
         </mesh>
     );
-}
-
-const TrafficFlowVisuals: Record<BridgeTraffic, { speed: number, color: string }> = {
-    light: {
-        speed: 15,
-        color: "#21D19F",
-    },
-    moderate: {
-        speed: 5,
-        color: "#FACC15",
-    },
-    heavy: {
-        speed: 2,
-        color: "#F97316",
-    },
-    standstill: {
-        speed: 0,
-        color: "#EF4444",
-    },
-    unknown: {
-        speed: 0,
-        color: "#9CA3AF",
-    },
 }

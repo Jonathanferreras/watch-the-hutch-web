@@ -1,19 +1,72 @@
-import { BridgeTraffic } from "../../bridge-state.types";
+import { TRAFFIC_CONFIG } from "../../bridge-state.constants";
+import { BridgeTraffic, ConfidenceLevel, TrafficDirection } from "../../bridge-state.types";
 
 interface TrafficCardProps {
-    direction: "NorthBound" | "SouthBound";
+    direction: TrafficDirection;
     intensity: BridgeTraffic;
     confidence: number;
 }
 
-export function TrafficCard({ direction, intensity, confidence }: TrafficCardProps) {
-    const trafficVisual = BridgeTrafficVisuals[intensity];
+type ConfidenceVisual = {
+    level: ConfidenceLevel;
+    label: string;
+    textColor: string;
+};
+
+export function TrafficCard({
+    direction,
+    intensity,
+    confidence,
+}: TrafficCardProps) {
+    function getConfidenceVisual(confidence: number): ConfidenceVisual {
+        if (confidence >= 0.9) {
+            return {
+                level: "verified",
+                label: "Verified",
+                textColor: "text-emerald-700",
+            };
+        }
+
+        if (confidence >= 0.75) {
+            return {
+                level: "high",
+                label: "High",
+                textColor: "text-green-700",
+            };
+        }
+
+        if (confidence >= 0.5) {
+            return {
+                level: "likely",
+                label: "Likely",
+                textColor: "text-amber-700",
+            };
+        }
+
+        if (confidence >= 0.25) {
+            return {
+                level: "uncertain",
+                label: "Uncertain",
+                textColor: "text-orange-700",
+            };
+        }
+
+        return {
+            level: "unknown",
+            label: "Unknown",
+            textColor: "text-slate-500",
+        };
+    }
+
+    const trafficVisual = TRAFFIC_CONFIG[intensity];
     const confidenceVisual = getConfidenceVisual(confidence);
     const confidenceIcon = ConfidenceVisuals[confidenceVisual.level];
+
     const title =
         direction === "NorthBound"
             ? "Hutchinson River Pkwy North"
             : "Hutchinson River Pkwy South";
+
     const directionArrow = direction === "NorthBound" ? "↑" : "↓";
 
     return (
@@ -54,7 +107,7 @@ export function TrafficCard({ direction, intensity, confidence }: TrafficCardPro
                                 className="h-2.5 w-10 rounded-full"
                                 style={{
                                     backgroundColor:
-                                        index < trafficVisual.level
+                                        index < trafficVisual.weight
                                             ? trafficVisual.color
                                             : "#e5e7eb",
                                 }}
@@ -85,57 +138,6 @@ export function TrafficCard({ direction, intensity, confidence }: TrafficCardPro
             </div>
         </div>
     );
-}
-
-type ConfidenceLevel =
-    | "verified"
-    | "high"
-    | "likely"
-    | "uncertain"
-    | "unknown";
-
-function getConfidenceVisual(confidence: number): {
-    level: ConfidenceLevel;
-    label: string;
-    textColor: string;
-} {
-    if (confidence >= 0.9) {
-        return {
-            level: "verified",
-            label: "Verified",
-            textColor: "text-emerald-700",
-        };
-    }
-
-    if (confidence >= 0.75) {
-        return {
-            level: "high",
-            label: "High",
-            textColor: "text-green-700",
-        };
-    }
-
-    if (confidence >= 0.5) {
-        return {
-            level: "likely",
-            label: "Likely",
-            textColor: "text-amber-700",
-        };
-    }
-
-    if (confidence >= 0.25) {
-        return {
-            level: "uncertain",
-            label: "Uncertain",
-            textColor: "text-orange-700",
-        };
-    }
-
-    return {
-        level: "unknown",
-        label: "Unknown",
-        textColor: "text-slate-500",
-    };
 }
 
 const ConfidenceVisuals: Record<
@@ -170,34 +172,5 @@ const ConfidenceVisuals: Record<
         icon: "?",
         textColor: "text-slate-500",
         backgroundColor: "bg-slate-100",
-    },
-};
-
-const BridgeTrafficVisuals: Record<
-    BridgeTraffic,
-    {
-        color: string;
-        level: number;
-    }
-> = {
-    light: {
-        color: "#21D19F",
-        level: 1,
-    },
-    moderate: {
-        color: "#FACC15",
-        level: 2,
-    },
-    heavy: {
-        color: "#F97316",
-        level: 3,
-    },
-    standstill: {
-        color: "#EF4444",
-        level: 4,
-    },
-    unknown: {
-        color: "#9CA3AF",
-        level: 0,
     },
 };

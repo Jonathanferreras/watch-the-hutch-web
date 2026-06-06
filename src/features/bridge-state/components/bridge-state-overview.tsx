@@ -4,6 +4,7 @@ import {
     BridgeTraffic,
     CurrentBridgeState,
 } from "../bridge-state.types";
+import { TRAFFIC_CONFIG } from "../bridge-state.constants";
 
 interface BridgeStateOverviewProps {
     state: CurrentBridgeState;
@@ -22,9 +23,9 @@ export function BridgeStateOverview({ state }: BridgeStateOverviewProps) {
     function getTrafficSummary() {
         if (position === BRIDGE_POSITION.UNKNOWN) {
             return {
-                emphasis: TrafficVisuals.unknown.label,
+                emphasis: TRAFFIC_CONFIG.unknown.label,
                 subtitle: "Waiting for a reliable bridge update.",
-                color: TrafficVisuals.unknown.color,
+                color: TRAFFIC_CONFIG.unknown.color,
             };
         }
 
@@ -32,30 +33,31 @@ export function BridgeStateOverview({ state }: BridgeStateOverviewProps) {
             return {
                 emphasis: "Stopped",
                 subtitle: "Bridge activity in progress.",
-                color: TrafficVisuals.standstill.color,
+                color: TRAFFIC_CONFIG.standstill.color,
             };
         }
 
         const worstTraffic = getWorstTraffic();
+        const worstTrafficConfig = TRAFFIC_CONFIG[worstTraffic.traffic];
 
         if (northBoundTraffic !== southBoundTraffic) {
             return {
-                emphasis: "Mixed",
+                emphasis: "Varied",
                 subtitle: getMixedTrafficSubtitle(worstTraffic),
-                color: TrafficVisuals[worstTraffic.traffic].color,
+                color: worstTrafficConfig.color,
             };
         }
 
         return {
-            emphasis: TrafficVisuals[worstTraffic.traffic].label,
+            emphasis: worstTrafficConfig.label,
             subtitle: getTrafficSubtitle(worstTraffic.traffic),
-            color: TrafficVisuals[worstTraffic.traffic].color,
+            color: worstTrafficConfig.color,
         };
     }
 
     function getWorstTraffic(): WorstTraffic {
-        const northWeight = TrafficVisuals[northBoundTraffic].weight;
-        const southWeight = TrafficVisuals[southBoundTraffic].weight;
+        const northWeight = TRAFFIC_CONFIG[northBoundTraffic].weight;
+        const southWeight = TRAFFIC_CONFIG[southBoundTraffic].weight;
 
         if (northWeight === southWeight) {
             return {
@@ -108,7 +110,7 @@ export function BridgeStateOverview({ state }: BridgeStateOverviewProps) {
             return "Both directions are moving smoothly.";
         }
 
-        return `${TrafficVisuals[traffic].label} traffic in both directions.`;
+        return `${TRAFFIC_CONFIG[traffic].label} traffic in both directions.`;
     }
 
     function getDirectionLabel(direction: TrafficDirection): string {
@@ -139,38 +141,3 @@ export function BridgeStateOverview({ state }: BridgeStateOverviewProps) {
         </section>
     );
 }
-
-const TrafficVisuals: Record<
-    BridgeTraffic,
-    {
-        color: string;
-        label: string;
-        weight: number;
-    }
-> = {
-    light: {
-        color: "#21D19F",
-        label: "Great",
-        weight: 1,
-    },
-    moderate: {
-        color: "#FACC15",
-        label: "Moderate",
-        weight: 2,
-    },
-    heavy: {
-        color: "#F97316",
-        label: "Heavy",
-        weight: 3,
-    },
-    standstill: {
-        color: "#EF4444",
-        label: "Backed up",
-        weight: 4,
-    },
-    unknown: {
-        color: "#9CA3AF",
-        label: "Unclear",
-        weight: 0,
-    },
-};

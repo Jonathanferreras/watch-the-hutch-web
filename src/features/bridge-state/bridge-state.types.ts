@@ -21,6 +21,15 @@ export const BRIDGE_STATE_SOURCE = {
   ADMIN: "admin",
 } as const;
 
+export type ConfidenceLevel =
+  | "verified"
+  | "high"
+  | "likely"
+  | "uncertain"
+  | "unknown";
+
+export type TrafficDirection = "NorthBound" | "SouthBound";
+
 export const BRIDGE_POSITIONS = Object.values(BRIDGE_POSITION);
 export const BRIDGE_TRAFFIC_STATES = Object.values(BRIDGE_TRAFFIC);
 export const BRIDGE_STATE_SOURCES = Object.values(BRIDGE_STATE_SOURCE);
