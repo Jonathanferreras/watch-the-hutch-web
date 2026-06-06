@@ -36,7 +36,7 @@ export function BridgeTrafficFlowScene({ traffic }: BridgeTrafficFlowSceneProps)
         .getStyle()
 
     return (
-        <div className="h-[400px] w-full rounded-xl overflow-hidden mt-5">
+        <div className="h-[350px] w-full rounded-xl overflow-hidden mt-5">
             <Canvas camera={{ position: [0, 5, 8], fov: 45 }}>
                 <ambientLight intensity={0.6} />
                 <directionalLight position={[5, 5, 5]} intensity={1} />

@@ -47,7 +47,7 @@ export function BridgeStatusVisualizer({ state }: BridgeStatusVisualizerProps) {
     };
 
     return (
-        <section className="h-[400px]">
+        <section className="h-[350px]">
             {renderScene()}
         </section>
     );
