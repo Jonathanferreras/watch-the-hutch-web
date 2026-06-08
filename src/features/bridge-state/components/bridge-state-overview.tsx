@@ -31,7 +31,7 @@ export function BridgeStateOverview({ state }: BridgeStateOverviewProps) {
 
         if (position !== BRIDGE_POSITION.CLOSED) {
             return {
-                emphasis: "Stopped",
+                emphasis: "Paused",
                 subtitle: "Bridge activity in progress.",
                 color: TRAFFIC_CONFIG.standstill.color,
             };
