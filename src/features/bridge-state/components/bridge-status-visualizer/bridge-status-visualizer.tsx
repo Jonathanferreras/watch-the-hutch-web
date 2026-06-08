@@ -36,7 +36,8 @@ export function BridgeStatusVisualizer({ state }: BridgeStatusVisualizerProps) {
 
             case BRIDGE_POSITION.OPENING:
             case BRIDGE_POSITION.CLOSING:
-                return <BridgeTransitionScene />;
+                const { position, positionConfidence } = state;
+                return <BridgeTransitionScene bridge={{ position, positionConfidence }} />;
 
             case BRIDGE_POSITION.OPEN:
                 return <BridgeOpenScene />;
