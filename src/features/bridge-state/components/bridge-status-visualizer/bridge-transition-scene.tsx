@@ -31,44 +31,7 @@ export function BridgeTransitionScene({ bridge }: BridgeTransitionSceneProps) {
         .getStyle();
 
     return (
-        <div className="flex flex-col h-[350px] w-full rounded-xl overflow-hidden mt-5">
-            <div className="ml-auto mr-auto w-[325px]">
-                <div className="flex items-start justify-between">
-                    <div>
-                        <p className="text-sm font-semibold text-zinc-900">
-                            Estimated Wait Time
-                        </p>
-
-                        <p className="mt-1 text-xs text-zinc-500">
-                            2 of 20 min elapsed
-                        </p>
-                    </div>
-
-                    <div className="text-right">
-                        <p className="text-3xl font-bold leading-none text-red-500">
-                            18
-                        </p>
-
-                        <p className="text-xs text-zinc-500">
-                            min remaining
-                        </p>
-                    </div>
-                </div>
-
-                <div className="mt-4">
-                    <div className="h-2 overflow-hidden rounded-full bg-red-100">
-                        <div
-                            className="h-full rounded-full bg-red-500 transition-all"
-                            style={{ width: "5%" }}
-                        />
-                    </div>
-
-                    <div className="mt-2 flex justify-between text-xs text-zinc-500">
-                        <span>Started 2:14 PM</span>
-                        <span>ETA 2:34 PM</span>
-                    </div>
-                </div>
-            </div>
+        <div className="flex flex-col h-[220px] w-full rounded-xl overflow-hidden mt-5">
             <Canvas camera={{ position: [12, 6, 10], fov: 45 }}>
                 <ambientLight intensity={0.6} />
                 <directionalLight position={[5, 5, 5]} intensity={1} />
