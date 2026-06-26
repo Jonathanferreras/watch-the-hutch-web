@@ -22,9 +22,16 @@ export default function Home() {
 
   return (
     <main className="pt-16">
-      <BridgeStateOverview state={data} />
-      <BridgeStatusVisualizer state={data} />
-      <BridgeTrafficOverview state={data} />
+      <div className="mx-auto grid max-w-6xl grid-cols-1 md:grid-cols-[minmax(0,1fr)_360px] md:gap-6 md:px-4">
+        <div>
+          <BridgeStateOverview state={data} />
+          <BridgeStatusVisualizer state={data} />
+        </div>
+
+        <div className="mt-0 md:mt-8">
+          <BridgeTrafficOverview state={data} />
+        </div>
+      </div>
     </main>
   );
 }
