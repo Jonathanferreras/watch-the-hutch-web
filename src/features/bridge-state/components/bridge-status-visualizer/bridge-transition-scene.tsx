@@ -40,13 +40,13 @@ export function BridgeTransitionScene({ bridge }: BridgeTransitionSceneProps) {
                         </p>
 
                         <p className="mt-1 text-xs text-zinc-500">
-                            16 of 20 min elapsed
+                            2 of 20 min elapsed
                         </p>
                     </div>
 
                     <div className="text-right">
                         <p className="text-3xl font-bold leading-none text-red-500">
-                            19
+                            18
                         </p>
 
                         <p className="text-xs text-zinc-500">
@@ -59,7 +59,7 @@ export function BridgeTransitionScene({ bridge }: BridgeTransitionSceneProps) {
                     <div className="h-2 overflow-hidden rounded-full bg-red-100">
                         <div
                             className="h-full rounded-full bg-red-500 transition-all"
-                            style={{ width: "10%" }}
+                            style={{ width: "5%" }}
                         />
                     </div>
 
