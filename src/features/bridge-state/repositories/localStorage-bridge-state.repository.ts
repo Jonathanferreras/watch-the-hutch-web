@@ -6,17 +6,23 @@ import {
 
 import { BridgeStateRepository } from "../bridge-state.repository";
 
+declare global {
+    var __bridgeStateStore:
+        | {
+              listeners: ((state: CurrentBridgeState | null) => void)[];
+          }
+        | undefined;
+}
+
 const STORAGE_KEY = "bridge-state";
 
 /**
  * Ensure listeners are truly global (even across module reloads)
  */
 const globalStore =
-    (globalThis as any).__bridgeStateStore ||
-    ((globalThis as any).__bridgeStateStore = {
-        listeners: [] as ((
-            state: CurrentBridgeState | null
-        ) => void)[],
+    globalThis.__bridgeStateStore ||
+    (globalThis.__bridgeStateStore = {
+        listeners: [] as ((state: CurrentBridgeState | null) => void)[],
     });
 
 function emit(state: CurrentBridgeState | null) {

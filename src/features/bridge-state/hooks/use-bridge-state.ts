@@ -12,10 +12,16 @@ export const useBridgeState = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
-  useEffect(() => {
+  const [prevSource, setPrevSource] = useState(source);
+
+  if (source !== prevSource) {
+    setPrevSource(source);
     setLoading(true);
     setData(null);
+    setError(null);
+  }
 
+  useEffect(() => {
     const unsubscribe = bridgeStateService.subscribeToBridgeState(
       (state) => {
         setData(state);

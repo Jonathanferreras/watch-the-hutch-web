@@ -11,7 +11,7 @@ import {
     BRIDGE_STATE_COLLECTION,
     EVENTS_COLLECTION,
 } from "@/src/lib/firebase/collections";
-import { CURRENT_BRIDGE_STATE_ID } from "../bridge-state.types";
+import { CURRENT_BRIDGE_STATE_ID, CurrentBridgeState } from "../bridge-state.types";
 import { BridgeStateRepository } from "../bridge-state.repository";
 import { logError } from "@/src/lib/errors";
 
@@ -28,14 +28,20 @@ export const firebaseBridgeStateRepository: BridgeStateRepository = {
 
             if (!snap.exists()) return null;
 
-            const data = snap.data() as any;
+            const data = snap.data() as
+                | (Omit<CurrentBridgeState, "updatedAt"> & {
+                      updatedAt?: { toDate?: () => Date };
+                  })
+                | undefined;
+
+            if (!data) return null;
 
             return {
                 ...data,
                 updatedAt: data.updatedAt?.toDate
                     ? data.updatedAt.toDate()
                     : new Date(),
-            };
+            } as CurrentBridgeState;
         } catch (error) {
             logError("FirebaseRepo", "Failed to fetch bridge state", error);
             throw error;
@@ -57,7 +63,12 @@ export const firebaseBridgeStateRepository: BridgeStateRepository = {
                     return;
                 }
 
-                const data = snap.data() as any;
+                const data = snap.data() as Omit<
+                    CurrentBridgeState,
+                    "updatedAt"
+                > & {
+                    updatedAt?: { toDate?: () => Date };
+                };
 
                 callback({
                     ...data,
