@@ -3,13 +3,19 @@ import { useEffect, useState } from "react";
 import { bridgeStateService } from "../bridge-state.service";
 import { CurrentBridgeState } from "../bridge-state.types";
 import { toError } from "@/src/lib/errors";
+import { useBridgeDataSource } from "./use-bridge-data-source";
 
 export const useBridgeState = () => {
+  const source = useBridgeDataSource();
+
   const [data, setData] = useState<CurrentBridgeState | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
   useEffect(() => {
+    setLoading(true);
+    setData(null);
+
     const unsubscribe = bridgeStateService.subscribeToBridgeState(
       (state) => {
         setData(state);
@@ -23,8 +29,7 @@ export const useBridgeState = () => {
     );
 
     return () => unsubscribe();
-  }, []);
-
+  }, [source]);
 
   return {
     data,
