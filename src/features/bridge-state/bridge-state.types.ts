@@ -78,18 +78,4 @@ export type CurrentBridgeState = {
   updatedAt: Date;
 };
 
-export type CurrentBridgeStatePayload = {
-  sourceId: string;
-  sourceType: BridgeStateSource;
-
-  position: BridgePosition;
-  positionConfidence: number;
-
-  northBoundTraffic: BridgeTraffic;
-  northBoundTrafficConfidence: number;
-
-  southBoundTraffic: BridgeTraffic;
-  southBoundTrafficConfidence: number;
-
-  acceptsDeviceUpdates: boolean;
-};
+export type CurrentBridgeStatePayload = Omit<CurrentBridgeState, "id" | "updatedAt">;
