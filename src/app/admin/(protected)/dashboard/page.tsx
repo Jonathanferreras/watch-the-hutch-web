@@ -5,6 +5,7 @@ import { useAuth } from "@/src/features/auth/hooks/use-auth";
 import { BridgeStatusCard } from "@/src/features/bridge-state/components/bridge-status-card";
 import { BridgeStateEditor } from "@/src/features/bridge-state/components/bridge-state-editor/bridge-state-editor";
 import { BridgeDataSourceToggle } from "@/src/features/bridge-state/components/bridge-data-source-toggle";
+import { SimulationGenerator } from "@/src/features/simulations/components/simulation-generator";
 
 export default function AdminDashboard() {
   const router = useRouter();
@@ -44,6 +45,7 @@ export default function AdminDashboard() {
         <br />
         <BridgeStateEditor />
         <br />
+        <SimulationGenerator />
       </div>
     </div>
   );
