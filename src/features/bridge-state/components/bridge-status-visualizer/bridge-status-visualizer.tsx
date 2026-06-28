@@ -1,16 +1,14 @@
 "use client";
 
-import { BRIDGE_POSITION, CurrentBridgeState } from "../../bridge-state.types";
+import { useBridgeStateExperience } from "../bridge-state-experience-context";
+import { BRIDGE_POSITION } from "../../bridge-state.types";
 import { BridgeTrafficFlowScene } from "./bridge-traffic-flow-scene";
 import { BridgeTransitionScene } from "./bridge-transition-scene";
 import { BridgeOpenScene } from "./bridge-open-scene";
 import { BridgeEstimatedWaitTimeStatus } from "./bridge-estimated-wait-time";
 
-interface BridgeStatusVisualizerProps {
-    state: CurrentBridgeState;
-}
-
-export function BridgeStatusVisualizer({ state }: BridgeStatusVisualizerProps) {
+export function BridgeStatusVisualizer() {
+    const state = useBridgeStateExperience();
 
     if (!state) {
         return <div className="text-center">Loading bridge data...</div>;

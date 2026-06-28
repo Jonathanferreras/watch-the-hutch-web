@@ -2,13 +2,9 @@ import {
     BRIDGE_POSITION,
     BRIDGE_TRAFFIC,
     BridgeTraffic,
-    CurrentBridgeState,
 } from "../bridge-state.types";
 import { TRAFFIC_CONFIG } from "../bridge-state.constants";
-
-interface BridgeStateOverviewProps {
-    state: CurrentBridgeState;
-}
+import { useBridgeStateExperience } from "./bridge-state-experience-context";
 
 type TrafficDirection = "northbound" | "southbound" | "both";
 
@@ -17,7 +13,8 @@ type WorstTraffic = {
     direction: TrafficDirection;
 };
 
-export function BridgeStateOverview({ state }: BridgeStateOverviewProps) {
+export function BridgeStateOverview() {
+    const state = useBridgeStateExperience();
     const { position, northBoundTraffic, southBoundTraffic } = state;
 
     function getTrafficSummary() {
@@ -30,11 +27,23 @@ export function BridgeStateOverview({ state }: BridgeStateOverviewProps) {
         }
 
         if (position !== BRIDGE_POSITION.CLOSED) {
+            let subtitle;
+
+            if (position === BRIDGE_POSITION.OPENING) {
+                subtitle = "Drawbridge is being raised."
+            } else if (position === BRIDGE_POSITION.OPEN) {
+                subtitle = "Drawbridge is raised. Please wait."
+            } else if (position === BRIDGE_POSITION.CLOSING) {
+                subtitle = "Traffic will resume shortly."
+            } else {
+                subtitle = "Bridge activity in progress."
+            }
+
             return {
-                emphasis: "Paused",
-                subtitle: "Bridge activity in progress.",
+                emphasis: "Stopped",
+                subtitle,
                 color: TRAFFIC_CONFIG.standstill.color,
-            };
+            }
         }
 
         const worstTraffic = getWorstTraffic();
