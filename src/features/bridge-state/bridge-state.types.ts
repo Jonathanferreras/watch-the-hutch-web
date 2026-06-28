@@ -68,6 +68,8 @@ export type BridgeEstimatedWaitTime = {
 
   initialTotalMinutes: number;
   estimatedTotalMinutes: number;
+  displayedRemainingMinutes?: number;
+  visualProgressPercent?: number;
 
   lastRevisedAt: Date | null;
   revisionReason: WaitTimeRevisionReason;

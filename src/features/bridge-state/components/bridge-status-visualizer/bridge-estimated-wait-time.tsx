@@ -16,7 +16,12 @@ export function BridgeEstimatedWaitTimeStatus({ waitTime }: BridgeEstimatedWaitT
         return () => window.clearInterval(intervalId);
     }, []);
 
-    const { estimatedTotalMinutes, startedAt } = waitTime;
+    const {
+        displayedRemainingMinutes,
+        estimatedTotalMinutes,
+        startedAt,
+        visualProgressPercent,
+    } = waitTime;
 
     if (!startedAt || !estimatedTotalMinutes) {
         return null;
@@ -24,8 +29,10 @@ export function BridgeEstimatedWaitTimeStatus({ waitTime }: BridgeEstimatedWaitT
 
     const startedAtDate = new Date(startedAt);
     const elapsedMinutes = Math.floor((now - startedAtDate.getTime()) / 60000);
-    const remainingMinutes = Math.max(0, estimatedTotalMinutes - elapsedMinutes);
-    const progress = Math.min(100, (elapsedMinutes / estimatedTotalMinutes) * 100);
+    const remainingMinutes =
+        displayedRemainingMinutes ?? Math.max(0, estimatedTotalMinutes - elapsedMinutes);
+    const progress =
+        visualProgressPercent ?? Math.min(100, (elapsedMinutes / estimatedTotalMinutes) * 100);
 
     const started = startedAtDate.toLocaleTimeString([], {
         hour: "2-digit",
