@@ -1,9 +1,9 @@
 "use client";
 
-import { useRef } from "react";
+import { useMemo, useRef, useState } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { Edges } from "@react-three/drei"
-import { Color, type Mesh } from "three";
+import { Edges } from "@react-three/drei";
+import { Color, type Mesh, type MeshStandardMaterial } from "three";
 
 import { BridgeTraffic } from "../../bridge-state.types";
 import { TRAFFIC_CONFIG } from "../../bridge-state.constants";
@@ -27,13 +27,9 @@ export function BridgeTrafficFlowScene({ traffic }: BridgeTrafficFlowSceneProps)
     const { northBoundTraffic, southBoundTraffic } = traffic;
 
     const northBoundProperties = TRAFFIC_CONFIG[northBoundTraffic];
-    const northBoundEdgeColor = new Color(northBoundProperties.color)
-        .multiplyScalar(0.7)
-        .getStyle()
     const southBoundProperties = TRAFFIC_CONFIG[southBoundTraffic];
-    const southBoundEdgeColor = new Color(southBoundProperties.color)
-        .multiplyScalar(0.7)
-        .getStyle()
+    const northBoundEdgeColor = getTrafficEdgeColor(northBoundProperties.color);
+    const southBoundEdgeColor = getTrafficEdgeColor(southBoundProperties.color);
 
     return (
         <div className="h-[350px] w-full rounded-xl overflow-hidden mt-5">
@@ -45,53 +41,81 @@ export function BridgeTrafficFlowScene({ traffic }: BridgeTrafficFlowSceneProps)
                     <boxGeometry args={[ROAD_WIDTH, ROAD_THICKNESS, ROAD_LENGTH]} />
                     <meshStandardMaterial color={ROAD_COLOR} />
                 </mesh>
-                <mesh position={[-GAP_BETWEEN_ROADS + 0.2, 0.75, 0]}>
-                    <boxGeometry args={[TRAFFIC_FLOW_WIDTH, 0.5, ROAD_LENGTH]} />
-                    <meshStandardMaterial
-                        color={southBoundProperties.color}
-                        transparent
-                        opacity={0.55}
-                        emissive={southBoundProperties.color}
-                        emissiveIntensity={0.25}
-                    />
-                    <Edges color={southBoundEdgeColor} />
-                </mesh>
-                {southBoundProperties.speed > 0 && <TrafficFlow
+                <TrafficBand
+                    position={[-GAP_BETWEEN_ROADS + 0.2, 0.75, 0]}
+                    width={TRAFFIC_FLOW_WIDTH}
+                    length={ROAD_LENGTH}
+                    color={southBoundProperties.color}
+                    edgeColor={southBoundEdgeColor}
+                />
+                <TrafficFlow
                     x={-1.6}
                     length={ROAD_LENGTH}
                     width={TRAFFIC_FLOW_WIDTH}
                     direction="down"
                     speed={southBoundProperties.speed}
                     color={southBoundEdgeColor}
-                />}
+                />
 
 
                 <mesh position={[GAP_BETWEEN_ROADS + 0.2, 0, 0]}>
                     <boxGeometry args={[ROAD_WIDTH, ROAD_THICKNESS, ROAD_LENGTH]} />
                     <meshStandardMaterial color={ROAD_COLOR} />
                 </mesh>
-                <mesh position={[GAP_BETWEEN_ROADS, 0.75, 0]}>
-                    <boxGeometry args={[TRAFFIC_FLOW_WIDTH, 0.5, ROAD_LENGTH]} />
-
-                    <meshStandardMaterial
-                        color={northBoundProperties.color}
-                        transparent
-                        opacity={0.55}
-                        emissive={northBoundProperties.color}
-                        emissiveIntensity={0.25}
-                    />
-                    <Edges color={northBoundEdgeColor} />
-                </mesh>
-                {northBoundProperties.speed > 0 && <TrafficFlow
+                <TrafficBand
+                    position={[GAP_BETWEEN_ROADS, 0.75, 0]}
+                    width={TRAFFIC_FLOW_WIDTH}
+                    length={ROAD_LENGTH}
+                    color={northBoundProperties.color}
+                    edgeColor={northBoundEdgeColor}
+                />
+                <TrafficFlow
                     x={GAP_BETWEEN_ROADS}
                     length={ROAD_LENGTH}
                     width={TRAFFIC_FLOW_WIDTH}
                     direction="up"
                     speed={northBoundProperties.speed}
                     color={northBoundEdgeColor}
-                />}
+                />
             </Canvas>
         </div>
+    );
+}
+
+interface TrafficBandProps {
+    position: [number, number, number];
+    width: number;
+    length: number;
+    color: string;
+    edgeColor: string;
+}
+
+function TrafficBand({ position, width, length, color, edgeColor }: TrafficBandProps) {
+    const materialRef = useRef<MeshStandardMaterial>(null);
+    const [initialColor] = useState(color);
+    const targetColor = useMemo(() => new Color(color), [color]);
+
+    useFrame((_, delta) => {
+        if (!materialRef.current) return;
+
+        const blend = 1 - Math.exp(-delta * 5);
+        materialRef.current.color.lerp(targetColor, blend);
+        materialRef.current.emissive.lerp(targetColor, blend);
+    });
+
+    return (
+        <mesh position={position}>
+            <boxGeometry args={[width, 0.5, length]} />
+            <meshStandardMaterial
+                ref={materialRef}
+                color={initialColor}
+                transparent
+                opacity={0.55}
+                emissive={initialColor}
+                emissiveIntensity={0.25}
+            />
+            <Edges color={edgeColor} />
+        </mesh>
     );
 }
 
@@ -106,27 +130,48 @@ interface TrafficFlowProps {
 
 function TrafficFlow({ x, length, width, direction, speed, color }: TrafficFlowProps) {
     const ref = useRef<Mesh>(null);
+    const materialRef = useRef<MeshStandardMaterial>(null);
+    const offsetRef = useRef(0);
+    const [initialColor] = useState(color);
+    const [initialOpacity] = useState(speed > 0 ? 0.45 : 0);
+    const speedRef = useRef(speed);
+    const targetColor = useMemo(() => new Color(color), [color]);
     const FLOW_LENGTH = 3;
     const travelDistance = length + FLOW_LENGTH;
     const startingPoint = -travelDistance / 2;
 
-    useFrame((state) => {
-        if (!ref.current) return;
+    useFrame((_, delta) => {
+        const blend = 1 - Math.exp(-delta * 5);
+        speedRef.current += (speed - speedRef.current) * blend;
+        offsetRef.current = (offsetRef.current + speedRef.current * delta) % travelDistance;
 
-        const time = state.clock.elapsedTime;
-        const offset = ((time * speed) % (travelDistance)) - (travelDistance) / 2;
+        if (ref.current) {
+            const offset = offsetRef.current - travelDistance / 2;
 
-        ref.current.position.z = offset * (direction == "up" ? -1 : 1)
+            ref.current.position.z = offset * (direction == "up" ? -1 : 1);
+        }
+
+        if (materialRef.current) {
+            materialRef.current.color.lerp(targetColor, blend);
+            materialRef.current.opacity += ((speed > 0 ? 0.45 : 0) - materialRef.current.opacity) * blend;
+        }
     });
 
     return (
         <mesh ref={ref} position={[x, 1, startingPoint]}>
             <boxGeometry args={[width, 0.08, 3]} />
             <meshStandardMaterial
-                color={color}
+                ref={materialRef}
+                color={initialColor}
                 transparent
-                opacity={0.45}
+                opacity={initialOpacity}
             />
         </mesh>
     );
+}
+
+function getTrafficEdgeColor(color: string) {
+    return new Color(color)
+        .multiplyScalar(0.7)
+        .getStyle();
 }
