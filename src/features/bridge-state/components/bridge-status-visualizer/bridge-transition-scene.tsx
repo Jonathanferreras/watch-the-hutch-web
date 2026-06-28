@@ -16,7 +16,7 @@ export function BridgeTransitionScene({ bridge }: BridgeTransitionSceneProps) {
 
     return (
         <div className="flex flex-col h-[220px] w-full rounded-xl overflow-hidden mt-5">
-            <Canvas camera={{ position: [12, 6, 10], fov: 45 }}>
+            <Canvas camera={{ position: [12, 6, 10], fov: 35 }}>
                 <ambientLight intensity={0.6} />
                 <directionalLight position={[5, 5, 5]} intensity={1} />
                 <Bridge
