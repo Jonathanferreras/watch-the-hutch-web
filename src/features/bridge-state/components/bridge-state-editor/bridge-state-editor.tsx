@@ -15,7 +15,8 @@ export function BridgeStateEditor() {
     return <BridgeStateEditorForm initialState={{
         initialPosition: data.position,
         initialNorthBoundTraffic: data.northBoundTraffic,
-        initialSouthBoundTraffic: data.southBoundTraffic
+        initialSouthBoundTraffic: data.southBoundTraffic,
+        initialEstimatedWaitTime: data.estimatedWaitTime,
     }}
     />;
 }

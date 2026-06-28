@@ -11,9 +11,28 @@ import {
     BRIDGE_STATE_COLLECTION,
     EVENTS_COLLECTION,
 } from "@/src/lib/firebase/collections";
-import { CURRENT_BRIDGE_STATE_ID, CurrentBridgeState } from "../bridge-state.types";
+import { BridgeEstimatedWaitTime, CURRENT_BRIDGE_STATE_ID, CurrentBridgeState } from "../bridge-state.types";
 import { BridgeStateRepository } from "../bridge-state.repository";
 import { logError } from "@/src/lib/errors";
+
+const toDate = (value: Date | { toDate?: () => Date } | null | undefined) => {
+    if (!value) return null;
+
+    return value instanceof Date ? value : value.toDate?.() ?? null;
+};
+
+const normalizeEstimatedWaitTime = (
+    waitTime: BridgeEstimatedWaitTime | null | undefined
+): BridgeEstimatedWaitTime | null => {
+    if (!waitTime) return null;
+
+    return {
+        ...waitTime,
+        startedAt: toDate(waitTime.startedAt) ?? new Date(),
+        lastRevisedAt: toDate(waitTime.lastRevisedAt),
+        updatedAt: toDate(waitTime.updatedAt) ?? new Date(),
+    };
+};
 
 export const firebaseBridgeStateRepository: BridgeStateRepository = {
     async getCurrentBridgeState() {
@@ -38,6 +57,9 @@ export const firebaseBridgeStateRepository: BridgeStateRepository = {
 
             return {
                 ...data,
+                estimatedWaitTime: normalizeEstimatedWaitTime(
+                    data.estimatedWaitTime
+                ),
                 updatedAt: data.updatedAt?.toDate
                     ? data.updatedAt.toDate()
                     : new Date(),
@@ -72,6 +94,9 @@ export const firebaseBridgeStateRepository: BridgeStateRepository = {
 
                 callback({
                     ...data,
+                    estimatedWaitTime: normalizeEstimatedWaitTime(
+                        data.estimatedWaitTime
+                    ),
                     updatedAt: data.updatedAt?.toDate
                         ? data.updatedAt.toDate()
                         : new Date(),

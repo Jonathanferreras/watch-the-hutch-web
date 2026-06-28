@@ -30,6 +30,10 @@ export type ConfidenceLevel =
 
 export type TrafficDirection = "NorthBound" | "SouthBound";
 
+export type EstimatedWaitTimeStatus = "not_applicable" | "calculating" | "estimated" | "unknown";
+
+export type WaitTimeRevisionReason = "initial_prediction" | "device_update" | "manual_override" | null;
+
 export const BRIDGE_POSITIONS = Object.values(BRIDGE_POSITION);
 export const BRIDGE_TRAFFIC_STATES = Object.values(BRIDGE_TRAFFIC);
 export const BRIDGE_STATE_SOURCES = Object.values(BRIDGE_STATE_SOURCE);
@@ -58,6 +62,20 @@ export type BridgeStateEvent = {
   createdAt: Date;
 };
 
+export type BridgeEstimatedWaitTime = {
+  status: EstimatedWaitTimeStatus;
+  startedAt: Date;
+
+  initialTotalMinutes: number;
+  estimatedTotalMinutes: number;
+
+  lastRevisedAt: Date | null;
+  revisionReason: WaitTimeRevisionReason;
+
+  confidence: number;
+  updatedAt: Date;
+};
+
 export type CurrentBridgeState = {
   id: typeof CURRENT_BRIDGE_STATE_ID;
 
@@ -72,6 +90,8 @@ export type CurrentBridgeState = {
 
   southBoundTraffic: BridgeTraffic;
   southBoundTrafficConfidence: number;
+
+  estimatedWaitTime: BridgeEstimatedWaitTime | null;
 
   acceptsDeviceUpdates: boolean;
 

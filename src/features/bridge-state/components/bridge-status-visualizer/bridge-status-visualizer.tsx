@@ -4,7 +4,7 @@ import { BRIDGE_POSITION, CurrentBridgeState } from "../../bridge-state.types";
 import { BridgeTrafficFlowScene } from "./bridge-traffic-flow-scene";
 import { BridgeTransitionScene } from "./bridge-transition-scene";
 import { BridgeOpenScene } from "./bridge-open-scene";
-import { BridgeEstimatedWaitTime } from "./bridge-estimated-wait-time";
+import { BridgeEstimatedWaitTimeStatus } from "./bridge-estimated-wait-time";
 
 interface BridgeStatusVisualizerProps {
     state: CurrentBridgeState;
@@ -38,14 +38,11 @@ export function BridgeStatusVisualizer({ state }: BridgeStatusVisualizerProps) {
             case BRIDGE_POSITION.OPENING:
             case BRIDGE_POSITION.CLOSING:
             case BRIDGE_POSITION.OPEN:
+                const { estimatedWaitTime } = state;
+
                 return (
                     <>
-                        <BridgeEstimatedWaitTime
-                            elapsedMinutes={2}
-                            totalMinutes={20}
-                            startedAt="2:14 PM"
-                            eta="2:34 PM"
-                        />
+                        {estimatedWaitTime && <BridgeEstimatedWaitTimeStatus waitTime={estimatedWaitTime} />}
 
                         {state.position === BRIDGE_POSITION.OPEN ? (
                             <BridgeOpenScene />

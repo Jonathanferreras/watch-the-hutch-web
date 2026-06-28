@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 import { bridgeStateService } from "../bridge-state.service";
-import { BridgePosition, BridgeTraffic } from "../bridge-state.types";
+import { BridgeEstimatedWaitTime, BridgePosition, BridgeTraffic } from "../bridge-state.types";
 import { useAuthContext } from "../../auth/components/auth-provider";
 import { toError } from "@/src/lib/errors";
 
@@ -9,7 +9,7 @@ interface UpdateBridgeStateParams {
     position: BridgePosition;
     northBoundTraffic: BridgeTraffic;
     southBoundTraffic: BridgeTraffic;
-
+    estimatedWaitTime: BridgeEstimatedWaitTime | null;
 }
 
 export const useUpdateBridgeState = () => {
@@ -17,7 +17,7 @@ export const useUpdateBridgeState = () => {
     const [updating, setUpdating] = useState(false);
     const [error, setError] = useState<Error | null>(null);
 
-    const updateBridgeState = async ({ position, northBoundTraffic, southBoundTraffic }: UpdateBridgeStateParams) => {
+    const updateBridgeState = async ({ position, northBoundTraffic, southBoundTraffic, estimatedWaitTime }: UpdateBridgeStateParams) => {
         if (!user?.uid) {
             throw new Error("You must be logged in to update bridge state.");
         }
@@ -36,6 +36,7 @@ export const useUpdateBridgeState = () => {
                 sourceId: user.uid,
                 sourceType: "admin",
                 acceptsDeviceUpdates: false,
+                estimatedWaitTime
             });
         } catch (error) {
             setError(toError(error, "Bridge state update error."));
