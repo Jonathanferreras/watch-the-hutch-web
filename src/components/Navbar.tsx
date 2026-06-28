@@ -46,8 +46,8 @@ export function Navbar() {
             </div>
 
             <div className={`${isOpen ? 'block' : 'hidden'} md:hidden bg-white border-b border-gray-200 px-4 pt-2 pb-4 space-y-1 shadow-inner`}>
-                <a href="#" className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50 hover:text-green-600">About</a>
-                <div className="pt-4 border-t border-gray-200 mt-2">
+                {/* <a href="#" className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50 hover:text-green-600">About</a> */}
+                <div className="pt-4 mt-2">
                     <button className="w-full px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 transition-colors">
                         Install App
                     </button>

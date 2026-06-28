@@ -29,7 +29,7 @@ export const TRAFFIC_CONFIG: Record<
     },
     standstill: {
         color: "#EF4444",
-        label: "Backed up",
+        label: "Standstill",
         weight: 4,
         speed: 0,
     },
