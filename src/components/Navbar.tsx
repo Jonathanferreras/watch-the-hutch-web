@@ -27,8 +27,10 @@ export function Navbar() {
                         <button
                             onClick={() => setIsOpen(!isOpen)}
                             type="button"
-                            className="text-gray-600 hover:text-gray-900 focus:outline-none p-2 rounded-md hover:bg-gray-100"
+                            className="p-2 focus-visible:outline-2 focus-visible:outline-offset-2 rounded-md text-gray-600 hover:bg-gray-100 hover:text-gray-900"
                             aria-expanded={isOpen}
+                            aria-label={isOpen ? "Close navigation menu" : "Open navigation menu"}
+                            aria-controls="mobile-navigation"
                         >
                             {isOpen ? (
                                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -45,8 +47,7 @@ export function Navbar() {
                 </div>
             </div>
 
-            <div className={`${isOpen ? 'block' : 'hidden'} md:hidden bg-white border-b border-gray-200 px-4 pt-2 pb-4 space-y-1 shadow-inner`}>
-                {/* <a href="#" className="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:bg-gray-50 hover:text-green-600">About</a> */}
+            <div id="mobile-navigation" className={`${isOpen ? 'block' : 'hidden'} md:hidden bg-white border-b border-gray-200 px-4 pt-2 pb-4 space-y-1 shadow-inner`}>
                 <div className="pt-4 mt-2">
                     <button className="w-full px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 transition-colors">
                         Install App
@@ -54,5 +55,5 @@ export function Navbar() {
                 </div>
             </div>
         </nav>
-    )
+    );
 }

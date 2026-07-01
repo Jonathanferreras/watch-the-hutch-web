@@ -11,7 +11,7 @@ interface BridgeStateExperienceProps {
 export function BridgeStateExperience({ state }: BridgeStateExperienceProps) {
   return (
     <BridgeStateExperienceProvider state={state}>
-      <main className="pt-16">
+      <main id="main-content" className="pt-16">
         <div className="mx-auto grid max-w-6xl grid-cols-1 md:grid-cols-[minmax(0,1fr)_360px] md:gap-6 md:px-4">
           <div>
             <BridgeStateOverview />

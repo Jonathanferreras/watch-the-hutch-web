@@ -156,6 +156,7 @@ export function BridgeStateEditorForm({ initialState }: BridgeStateEditorFormPro
 			<form className="flex max-w-sm flex-col gap-3" onSubmit={handleSubmit}>
 				<label htmlFor="bridge-position">Bridge Position</label>
 				<select
+					id="bridge-position"
 					name="bridge-position"
 					value={position}
 					onChange={(event) => {
@@ -179,6 +180,7 @@ export function BridgeStateEditorForm({ initialState }: BridgeStateEditorFormPro
 
 				<label htmlFor="bridge-northbound-traffic">North-Bound Traffic</label>
 				<select
+					id="bridge-northbound-traffic"
 					name="bridge-northbound-traffic"
 					value={northBoundTraffic}
 					onChange={(event) => setNorthBoundTraffic(event.target.value as BridgeTraffic)}
@@ -188,6 +190,7 @@ export function BridgeStateEditorForm({ initialState }: BridgeStateEditorFormPro
 
 				<label htmlFor="bridge-southbound-traffic">South-Bound Traffic</label>
 				<select
+					id="bridge-southbound-traffic"
 					name="bridge-southbound-traffic"
 					value={southBoundTraffic}
 					onChange={(event) => setSouthBoundTraffic(event.target.value as BridgeTraffic)}
@@ -249,7 +252,7 @@ export function BridgeStateEditorForm({ initialState }: BridgeStateEditorFormPro
 					{updating ? "Updating..." : "Update"}
 				</button>
 
-				{submitError ? <p>{submitError}</p> : null}
+				{submitError ? <p role="alert" className="text-sm text-red-600">{submitError}</p> : null}
 			</form>
 		</div>
 	);
