@@ -150,87 +150,92 @@ export function BridgeStateEditorForm({ initialState }: BridgeStateEditorFormPro
 	};
 
 	return (
-		<div className="rounded-xl p-2 overflow-hidden border">
-			<h2>Bridge State Editor</h2>
+		<section className="rounded-xl border bg-white p-4 shadow-sm">
+			<div className="mb-4">
+				<h2 className="text-base font-semibold">Bridge State Editor</h2>
+				<p className="text-sm text-gray-500">
+					Update the live bridge position and traffic conditions.
+				</p>
+			</div>
 
-			<form className="flex max-w-sm flex-col gap-3" onSubmit={handleSubmit}>
-				<label htmlFor="bridge-position">Bridge Position</label>
-				<select
-					id="bridge-position"
-					name="bridge-position"
-					value={position}
-					onChange={(event) => {
-						const nextPosition = event.target.value as BridgePosition;
-						setPosition(nextPosition);
+			<form className="flex max-w-md flex-col gap-4" onSubmit={handleSubmit}>
+				<label className="flex flex-col gap-1 text-sm font-medium" htmlFor="bridge-position">
+					Bridge Position
+					<select
+						className="rounded-lg border bg-white px-3 py-2 font-normal"
+						id="bridge-position"
+						name="bridge-position"
+						value={position}
+						onChange={(event) => {
+							const nextPosition = event.target.value as BridgePosition;
+							setPosition(nextPosition);
 
-						if (
-							initialPosition === BRIDGE_POSITION.CLOSED &&
-							nextPosition === BRIDGE_POSITION.OPENING
-						) {
-							setShouldSetEstimatedWaitTime(true);
-						}
-					}}
-				>
-					{BRIDGE_POSITIONS.map((pos) => (
-						<option key={pos} value={pos}>
-							{pos}
-						</option>
-					))}
-				</select>
+							if (
+								initialPosition === BRIDGE_POSITION.CLOSED &&
+								nextPosition === BRIDGE_POSITION.OPENING
+							) {
+								setShouldSetEstimatedWaitTime(true);
+							}
+						}}
+					>
+						{BRIDGE_POSITIONS.map((pos) => (
+							<option key={pos} value={pos}>
+								{pos}
+							</option>
+						))}
+					</select>
+				</label>
 
-				<label htmlFor="bridge-northbound-traffic">North-Bound Traffic</label>
-				<select
-					id="bridge-northbound-traffic"
-					name="bridge-northbound-traffic"
-					value={northBoundTraffic}
-					onChange={(event) => setNorthBoundTraffic(event.target.value as BridgeTraffic)}
-				>
-					{renderTrafficOptions()}
-				</select>
+				<label className="flex flex-col gap-1 text-sm font-medium" htmlFor="bridge-northbound-traffic">
+					North-Bound Traffic
+					<select
+						className="rounded-lg border bg-white px-3 py-2 font-normal"
+						id="bridge-northbound-traffic"
+						name="bridge-northbound-traffic"
+						value={northBoundTraffic}
+						onChange={(event) => setNorthBoundTraffic(event.target.value as BridgeTraffic)}
+					>
+						{renderTrafficOptions()}
+					</select>
+				</label>
 
-				<label htmlFor="bridge-southbound-traffic">South-Bound Traffic</label>
-				<select
-					id="bridge-southbound-traffic"
-					name="bridge-southbound-traffic"
-					value={southBoundTraffic}
-					onChange={(event) => setSouthBoundTraffic(event.target.value as BridgeTraffic)}
-				>
-					{renderTrafficOptions()}
-				</select>
+				<label className="flex flex-col gap-1 text-sm font-medium" htmlFor="bridge-southbound-traffic">
+					South-Bound Traffic
+					<select
+						className="rounded-lg border bg-white px-3 py-2 font-normal"
+						id="bridge-southbound-traffic"
+						name="bridge-southbound-traffic"
+						value={southBoundTraffic}
+						onChange={(event) => setSouthBoundTraffic(event.target.value as BridgeTraffic)}
+					>
+						{renderTrafficOptions()}
+					</select>
+				</label>
 
 				{canEditEstimatedWaitTime &&
-					<>
-						<label htmlFor="estimated-wait-minutes">Estimated Wait Time</label>
-						{hasSavedEstimatedWaitTime ? (
-							<div className="flex gap-2">
-								<input
-									id="estimated-wait-minutes"
-									name="estimated-wait-minutes"
-									disabled
-									value={getEstimatedWaitCountdown()}
-								/>
-								<button
-									className="rounded border px-3 py-2"
-									onClick={() => setShouldSetEstimatedWaitTime(false)}
-									type="button"
-								>
-									Clear
-								</button>
-							</div>
-						) : (
-							<>
-								<label htmlFor="set-estimated-wait-time">
+					<div className="flex flex-col gap-3 rounded-lg border bg-gray-50 p-3">
+						<label className="flex flex-col gap-1 text-sm font-medium" htmlFor="estimated-wait-minutes">
+							Estimated Wait Time
+							{hasSavedEstimatedWaitTime ? (
+								<div className="flex gap-2">
 									<input
-										checked={shouldSetEstimatedWaitTime}
-										id="set-estimated-wait-time"
-										name="set-estimated-wait-time"
-										onChange={(event) => setShouldSetEstimatedWaitTime(event.target.checked)}
-										type="checkbox"
-									/>{" "}
-									Set estimated wait time
-								</label>
-
+										className="min-w-0 flex-1 rounded-lg border bg-white px-3 py-2 font-normal disabled:bg-gray-100"
+										id="estimated-wait-minutes"
+										name="estimated-wait-minutes"
+										disabled
+										value={getEstimatedWaitCountdown()}
+									/>
+									<button
+										className="rounded-lg border bg-white px-3 py-2 text-sm"
+										onClick={() => setShouldSetEstimatedWaitTime(false)}
+										type="button"
+									>
+										Clear
+									</button>
+								</div>
+							) : (
 								<input
+									className="rounded-lg border bg-white px-3 py-2 font-normal disabled:bg-gray-100"
 									id="estimated-wait-minutes"
 									name="estimated-wait-minutes"
 									disabled={!shouldSetEstimatedWaitTime}
@@ -239,13 +244,30 @@ export function BridgeStateEditorForm({ initialState }: BridgeStateEditorFormPro
 									value={estimatedWaitMinutes}
 									onChange={(event) => setEstimatedWaitMinutes(Number(event.target.value))}
 								/>
-							</>
-						)}
-					</>
+							)}
+						</label>
+
+						{!hasSavedEstimatedWaitTime ? (
+							<label
+								className="flex items-center gap-2 text-sm font-medium"
+								htmlFor="set-estimated-wait-time"
+							>
+								<input
+									checked={shouldSetEstimatedWaitTime}
+									className="size-4"
+									id="set-estimated-wait-time"
+									name="set-estimated-wait-time"
+									onChange={(event) => setShouldSetEstimatedWaitTime(event.target.checked)}
+									type="checkbox"
+								/>
+								Set estimated wait time
+							</label>
+						) : null}
+					</div>
 				}
 
 				<button
-					className="bg-blue-500 hover:bg-blue-400 text-white font-bold py-2 px-4 border-b-4 border-blue-700 hover:border-blue-500 rounded"
+					className="rounded-lg bg-green-600 px-3 py-2 text-sm font-semibold text-white disabled:cursor-not-allowed disabled:opacity-60"
 					disabled={updating}
 					type="submit"
 				>
@@ -254,6 +276,6 @@ export function BridgeStateEditorForm({ initialState }: BridgeStateEditorFormPro
 
 				{submitError ? <p role="alert" className="text-sm text-red-600">{submitError}</p> : null}
 			</form>
-		</div>
+		</section>
 	);
 }
