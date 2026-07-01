@@ -9,6 +9,7 @@ import { BridgeTraffic } from "../../bridge-state.types";
 import { TRAFFIC_CONFIG } from "../../bridge-state.constants";
 
 interface BridgeTrafficFlowSceneProps {
+    reduceMotion: boolean;
     traffic: {
         northBoundTraffic: BridgeTraffic;
         northBoundTrafficConfidence: number;
@@ -17,7 +18,7 @@ interface BridgeTrafficFlowSceneProps {
     }
 }
 
-export function BridgeTrafficFlowScene({ traffic }: BridgeTrafficFlowSceneProps) {
+export function BridgeTrafficFlowScene({ reduceMotion, traffic }: BridgeTrafficFlowSceneProps) {
     const ROAD_LENGTH = 20;
     const ROAD_WIDTH = 3.5;
     const ROAD_COLOR = "#FFF8F0";
@@ -33,7 +34,7 @@ export function BridgeTrafficFlowScene({ traffic }: BridgeTrafficFlowSceneProps)
 
     return (
         <div className="h-[350px] w-full rounded-xl overflow-hidden mt-5">
-            <Canvas camera={{ position: [0, 5, 8], fov: 45 }}>
+            <Canvas aria-hidden="true" camera={{ position: [0, 5, 8], fov: 45 }}>
                 <ambientLight intensity={0.6} />
                 <directionalLight position={[5, 5, 5]} intensity={1} />
 
@@ -47,6 +48,7 @@ export function BridgeTrafficFlowScene({ traffic }: BridgeTrafficFlowSceneProps)
                     length={ROAD_LENGTH}
                     color={southBoundProperties.color}
                     edgeColor={southBoundEdgeColor}
+                    reduceMotion={reduceMotion}
                 />
                 <TrafficFlow
                     x={-1.6}
@@ -55,6 +57,7 @@ export function BridgeTrafficFlowScene({ traffic }: BridgeTrafficFlowSceneProps)
                     direction="down"
                     speed={southBoundProperties.speed}
                     color={southBoundEdgeColor}
+                    reduceMotion={reduceMotion}
                 />
 
 
@@ -68,6 +71,7 @@ export function BridgeTrafficFlowScene({ traffic }: BridgeTrafficFlowSceneProps)
                     length={ROAD_LENGTH}
                     color={northBoundProperties.color}
                     edgeColor={northBoundEdgeColor}
+                    reduceMotion={reduceMotion}
                 />
                 <TrafficFlow
                     x={GAP_BETWEEN_ROADS}
@@ -76,6 +80,7 @@ export function BridgeTrafficFlowScene({ traffic }: BridgeTrafficFlowSceneProps)
                     direction="up"
                     speed={northBoundProperties.speed}
                     color={northBoundEdgeColor}
+                    reduceMotion={reduceMotion}
                 />
             </Canvas>
         </div>
@@ -88,15 +93,16 @@ interface TrafficBandProps {
     length: number;
     color: string;
     edgeColor: string;
+    reduceMotion: boolean;
 }
 
-function TrafficBand({ position, width, length, color, edgeColor }: TrafficBandProps) {
+function TrafficBand({ position, width, length, color, edgeColor, reduceMotion }: TrafficBandProps) {
     const materialRef = useRef<MeshStandardMaterial>(null);
     const [initialColor] = useState(color);
     const targetColor = useMemo(() => new Color(color), [color]);
 
     useFrame((_, delta) => {
-        if (!materialRef.current) return;
+        if (!materialRef.current || reduceMotion) return;
 
         const blend = 1 - Math.exp(-delta * 5);
         materialRef.current.color.lerp(targetColor, blend);
@@ -126,9 +132,10 @@ interface TrafficFlowProps {
     direction: "up" | "down";
     speed: number;
     color: string;
+    reduceMotion: boolean;
 }
 
-function TrafficFlow({ x, length, width, direction, speed, color }: TrafficFlowProps) {
+function TrafficFlow({ x, length, width, direction, speed, color, reduceMotion }: TrafficFlowProps) {
     const ref = useRef<Mesh>(null);
     const materialRef = useRef<MeshStandardMaterial>(null);
     const offsetRef = useRef(0);
@@ -141,6 +148,8 @@ function TrafficFlow({ x, length, width, direction, speed, color }: TrafficFlowP
     const startingPoint = -travelDistance / 2;
 
     useFrame((_, delta) => {
+        if (reduceMotion) return;
+
         const blend = 1 - Math.exp(-delta * 5);
         speedRef.current += (speed - speedRef.current) * blend;
         offsetRef.current = (offsetRef.current + speedRef.current * delta) % travelDistance;

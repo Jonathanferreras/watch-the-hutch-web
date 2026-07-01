@@ -6,15 +6,16 @@ type DirectionalArrowProps = {
     position: [number, number, number];
     direction: "up" | "down";
     color: string;
+    reduceMotion?: boolean;
 };
 
-export function DirectionalArrow({ position, direction, color }: DirectionalArrowProps) {
+export function DirectionalArrow({ position, direction, color, reduceMotion }: DirectionalArrowProps) {
     const arrowRef = useRef<Group>(null);
     const basePosition = position;
     const directionColor = color;
 
     useFrame(({ clock }) => {
-        if (!arrowRef.current) return;
+        if (!arrowRef.current || reduceMotion) return;
 
         const arrowMovementSpeed = Math.sin(clock.elapsedTime * 5)
         const arrowMovementDistance = 0.45;

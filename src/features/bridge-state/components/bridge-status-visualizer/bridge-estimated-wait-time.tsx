@@ -64,9 +64,16 @@ export function BridgeEstimatedWaitTimeStatus({ waitTime }: BridgeEstimatedWaitT
             </div>
 
             <div className="mt-4">
-                <div className="h-2 overflow-hidden rounded-full bg-red-100">
+                <div
+                    aria-label={`Estimated wait progress: ${Math.round(progress)} percent complete`}
+                    aria-valuemax={100}
+                    aria-valuemin={0}
+                    aria-valuenow={Math.round(progress)}
+                    className="h-2 overflow-hidden rounded-full bg-red-100"
+                    role="progressbar"
+                >
                     <div
-                        className="h-full rounded-full bg-red-500 transition-all"
+                        className="h-full rounded-full bg-red-500 transition-all motion-reduce:transition-none"
                         style={{ width: `${progress}%` }}
                     />
                 </div>

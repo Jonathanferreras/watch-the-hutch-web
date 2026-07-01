@@ -7,15 +7,31 @@ export default function Home() {
   const { data, loading, error } = useBridgeState();
 
   if (loading) {
-    return <p>Loading bridge state...</p>;
+    return (
+      <main className="pt-20" id="main-content">
+        <p className="text-center" role="status">
+          Loading bridge state...
+        </p>
+      </main>
+    );
   }
 
   if (error) {
-    return <p>Failed to load bridge state.</p>;
+    return (
+      <main className="pt-20" id="main-content">
+        <p className="text-center text-red-600" role="alert">
+          Failed to load bridge state.
+        </p>
+      </main>
+    );
   }
 
   if (!data) {
-    return <p>No bridge state available.</p>;
+    return (
+      <main className="pt-20" id="main-content">
+        <p className="text-center">No bridge state available.</p>
+      </main>
+    );
   }
 
   return <BridgeStateExperience state={data} />;

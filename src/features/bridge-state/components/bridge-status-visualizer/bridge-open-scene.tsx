@@ -5,7 +5,11 @@ import { Bridge } from "@/src/components/3D/Bridge";
 import { TugBoat } from "@/src/components/3D/TugBoat";
 import { River } from "@/src/components/3D/River";
 
-export function BridgeOpenScene() {
+interface BridgeOpenSceneProps {
+    reduceMotion: boolean;
+}
+
+export function BridgeOpenScene({ reduceMotion }: BridgeOpenSceneProps) {
     const RIVER_COLOR = "#6BB6FF";
     const BOAT_COLOR = "#7dc191";
 
@@ -15,7 +19,7 @@ export function BridgeOpenScene() {
 
     return (
         <div className="flex flex-col h-[220px] w-full rounded-xl overflow-hidden mt-5">
-            <Canvas shadows camera={{ position: [26, 24, 17], fov: 15 }}>
+            <Canvas aria-hidden="true" shadows camera={{ position: [26, 24, 17], fov: 15 }}>
                 <ambientLight intensity={0.6} />
                 <directionalLight
                     position={[20, 25, 15]}
@@ -42,7 +46,7 @@ export function BridgeOpenScene() {
                 <TugBoat
                     position={[1.5, -0.5, -2]}
                     color={BOAT_COLOR}
-                    animations={{
+                    animations={reduceMotion ? undefined : {
                         rockingSpeed: 1.2,
                         rockingAmount: 0.1,
                         driftAmount: 1.25
@@ -52,4 +56,3 @@ export function BridgeOpenScene() {
         </div>
     );
 }
-
