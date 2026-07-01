@@ -13,10 +13,6 @@ export function Navbar() {
                         <span className="text-xl font-bold text-gray-900">Watch the Hutch</span>
                     </div>
 
-                    <div className="hidden md:flex space-x-8 font-medium text-gray-600">
-                        <a href="#" className="hover:text-green-600 transition-colors">About</a>
-                    </div>
-
                     <div className="hidden md:flex items-center space-x-4">
                         <button className="px-4 py-2 text-sm font-medium text-white bg-green-600 rounded-lg hover:bg-green-700 transition-colors">
                             Install App
