@@ -1,6 +1,6 @@
 # Watch The Hutch window mount v2, retro porthole styling
 
-Same mount as v2 (every hole, slot, nut pocket and screw is unchanged) with a retro-futuristic outside: a rounded TV-cabinet hood with speed-line ribs, the screen recessed in a CRT-style frame, a riveted copper porthole around the round display, grille slots and a "WATCH THE HUTCH" badge on the lid, and a rounded cream base with speed lines under the Pi.
+Same mount as v2 (every hole, slot, nut pocket and screw is unchanged) with a retro-futuristic outside: a rounded TV-cabinet hood with speed-line ribs, the screen recessed in a CRT-style frame, a riveted copper porthole around the round display, grille slots and a "WATCH THE HUTCH" badge on the lid, and a rounded sage green base with speed lines under the Pi.
 
 ![hero](previews/hero.png)
 
@@ -26,7 +26,7 @@ Everything fits the FlashForge Finder v1 (140 x 140 x 140). `step/` has the same
 
 ## Printing (Finder v1)
 
-- PLA (the Finder v1 bed is unheated). Colours: hood in the same sage green as the v1 mount (about #82A267, sampled from IMG_7020; easiest is to reuse that spool), lid black, porthole in copper or brass silk PLA, base cream. Paint the inside of the green hood matte black (or line it with black flocking/tape) so room light doesn't glow through the walls or reflect into the camera.
+- PLA (the Finder v1 bed is unheated). Colours: hood and lid in black (blocks the most room light and keeps reflections off the camera), base and Pi plate in the same sage green as the v1 mount (about #82A267, sampled from IMG_7020; easiest is to reuse that spool), porthole in copper or brass silk PLA.
 - The lid prints display-face down, so its grille and badge are engraved into the first layers. If they come out soft, lower the first-layer squish a little.
 - 0.2 mm layers, 3 perimeters, 25% infill. No supports needed in the orientations the STLs are saved in.
 - Print the hood with the glass flange on the bed. Print the base with its top surface on the bed and the Pi wall standing up.

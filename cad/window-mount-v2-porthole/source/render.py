@@ -105,13 +105,13 @@ def assembly(pan=0, tilt=0, explode=0.0):
     cam = place_on_axis(U(P["camera_cradle"], camera_dummy()), pan, tilt)
     items = [
         (mullion, "#b9bcc0", 1.0),
-        (P["base_pi_mount"], "#e8dcc0", 1.0),
+        (P["base_pi_mount"], "#82a267", 1.0),
         (U(pi, cooler), "#2f7d3a", 1.0),
         (ports, "#c8c8c8", 1.0),
-        (mv(P["hood"], dz=hood_z + e), "#82a267", 1.0),
+        (mv(P["hood"], dz=hood_z + e), "#1e1e1e", 1.0),
         (mv(place_yoke(P["camera_yoke"], pan), dz=hood_z + 2.0 * e), "#e69138", 1.0),
         (mv(cam, dz=hood_z + 2.6 * e), "#f1c232", 1.0),
-        (mv(P["screen_lid"], dy=1.2 * e, dz=hood_z + e), "#2a2a2a", 1.0),
+        (mv(P["screen_lid"], dy=1.2 * e, dz=hood_z + e), "#2c2c2c", 1.0),
         (mv(P["porthole_bezel"], dy=1.8 * e, dz=hood_z + e), "#c47a3a", 1.0),
         (mv(P["screen_retainer"], dy=0.6 * e, dz=hood_z + e), "#e69138", 1.0),
     ]
@@ -122,7 +122,7 @@ if __name__ == "__main__":
     fig = plt.figure(figsize=(9, 8), dpi=120)
     ax = fig.add_subplot(1, 1, 1)
     draw(ax, assembly(), 12, 72, size=(1000, 900))
-    ax.set_title("Room side (hood in the v1 sage green #82A267, copper porthole, cream base)")
+    ax.set_title("Room side (black hood, copper porthole, base in the v1 sage green #82A267)")
     fig.tight_layout(); fig.savefig(os.path.join(OUT, "hero.png")); plt.close(fig)
 
     fig = plt.figure(figsize=(14, 7), dpi=110)
@@ -139,7 +139,7 @@ if __name__ == "__main__":
     fig = plt.figure(figsize=(15, 13), dpi=100)
     for i, n in enumerate(names):
         ax = fig.add_subplot(3, 3, i + 1)
-        col = "#c9b88f" if "base" in n or "plate" in n else ("#c47a3a" if "bezel" in n else ("#82a267" if n == "hood" else "#4f7f7e"))
+        col = "#82a267" if "base" in n or "plate" in n else ("#c47a3a" if "bezel" in n else "#3a3a3a")
         draw(ax, [(to_print(n, P[n]), col, 1.0)], 30, -60)
         ax.set_title(n + "\n(as printed)")
     ax = fig.add_subplot(3, 3, 9)
