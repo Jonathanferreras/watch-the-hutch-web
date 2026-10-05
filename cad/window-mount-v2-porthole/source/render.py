@@ -10,6 +10,7 @@ from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from wth_mount import *  # noqa
 from camera_module3 import camera_module3_parts
+from display_gc9a01 import display_parts
 
 OUT = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "previews")
 os.makedirs(OUT, exist_ok=True)
@@ -116,15 +117,8 @@ def assembly(pan=0, tilt=0, explode=0.0):
     mullion = box(-90, 90, 0, MULLION_DEPTH, -MULLION_FACE_H, 0)
     cam_parts = [(mv(place_on_axis(sh, pan, tilt), dz=hood_z + 2.6 * e), "#%02x%02x%02x" % tuple(int(c * 255) for c in col), 1.0)
                  for _, sh, col in camera_module3_parts()]
-    zc = DISP_CENTER_Z
-    y0 = HOOD_IN_D
-    dglass = cyl(17.8, (0, y0 - 2.2, zc), (0, 1, 0), 2.2)
-    dact = cyl(16.2, (0, y0 - 0.01, zc), (0, 1, 0), 0.02)
-    dpcb = U(cyl(DISP_PCB_D / 2, (0, y0 - 3.8, zc), (0, 1, 0), 1.6),
-             box(-DISP_TAB_W / 2, DISP_TAB_W / 2, y0 - 3.8, y0 - 2.2, zc - DISP_PCB_D / 2 - DISP_TAB_H, zc))
-    dupont = box(-9, 9, y0 - 3.8 - 14, y0 - 3.8, zc - DISP_PCB_D / 2 - DISP_TAB_H + 1, zc - DISP_PCB_D / 2 - DISP_TAB_H + 3.5)
-    disp = [(mv(dglass, dy=0.6 * e, dz=hood_z + e), "#0d0d12", 1.0), (mv(dact, dy=0.6 * e, dz=hood_z + e), "#1c2a44", 1.0),
-            (mv(dpcb, dy=0.6 * e, dz=hood_z + e), "#1f4e9e", 1.0), (mv(dupont, dy=0.6 * e, dz=hood_z + e), "#202020", 1.0)]
+    disp = [(mv(sh, dy=0.6 * e, dz=hood_z + e), "#%02x%02x%02x" % tuple(int(c * 255) for c in col), 1.0)
+            for _, sh, col in display_parts()]
     items = [
         (mullion, "#b9bcc0", 1.0),
         (P["base_pi_mount"], "#82a267", 1.0),

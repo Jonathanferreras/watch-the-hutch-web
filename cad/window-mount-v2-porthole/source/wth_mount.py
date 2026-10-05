@@ -44,12 +44,12 @@ CAM_HOLES_FROM_TOP = (2.0, 14.5)
 CAM_TAP_D = 1.7           # pilot for M2 self-tapping screws
 CAM_STANDOFF_H = 4.0
 
-# Round display (generic 1.28" GC9A01 module, blue PCB). CHECK THESE against yours.
-DISP_PCB_D = 39.5         # diameter of the round part of the PCB
+# Round display (1.28" GC9A01 module), measured from Jonny's own model of it
+DISP_PCB_D = 38.0         # diameter of the round part of the PCB (measured from Jonny's model)
 DISP_VIEW_D = 33.0        # window in the lid (glass is ~35.6, active area 32.4)
-DISP_TAB_W = 26.0         # width of the pin tab below the circle
-DISP_TAB_H = 9.0          # how far the tab sticks out below the circle
-DISP_STACK = 3.8          # glass + PCB thickness (retainer clamps at this height)
+DISP_TAB_W = 23.0         # width of the pin tab below the circle
+DISP_TAB_H = 9.5          # how far the tab sticks out below the circle
+DISP_STACK = 3.6          # glass 2.0 + PCB 1.6 (retainer clamps at this height)
 DISP_CENTER_Z = 36.0      # display centre above the hood floor
 
 # Hood

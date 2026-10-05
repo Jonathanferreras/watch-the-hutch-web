@@ -22,7 +22,9 @@ Underneath the styling it is a mullion cap like v1.0 with a new Pi 5 mount on th
 | screen_retainer | `stl/screen_retainer.stl` | 56.5 x 8 x 3 | Clamps the display into the lid. |
 | porthole_bezel | `stl/porthole_bezel.stl` | 44 x 44 x 4 | Riveted ring around the display, located by 3 filament dowels and glued. |
 
-Everything fits the FlashForge Finder v1 (140 x 140 x 140). `step/` has the same parts as STEP for Fusion 360, plus `assembly_all_parts.step` with every part in its installed position.
+Everything fits the FlashForge Finder v1 (140 x 140 x 140).
+
+`step/camera_module3_positioned.step` and `step/display_gc9a01_positioned.step` are reference models (not printed) already placed in the assembly's coordinates. `step/` has the same parts as STEP for Fusion 360, plus `assembly_all_parts.step` with every part in its installed position.
 
 ## Printing (Finder v1)
 
@@ -64,7 +66,7 @@ The base is sized from your photo, not from the Fusion file, so check these in `
 
 - `MULLION_DEPTH` (45 mm guess): mullion top from the glass bead to the room face.
 - `MULLION_FACE_H` (44 mm guess): height of the mullion's room-facing face.
-- `DISP_PCB_D` (39.5 mm guess) and `DISP_TAB_W`/`DISP_TAB_H`: round display board diameter and pin tab size.
+- Display: now sized from your own GC9A01 model (38.0 mm board, 35.5 x 2.0 mm glass, 1.6 mm PCB, 23 x 9.5 mm pin tab). Straight dupont plugs on its header clear the camera mount by 2.5 mm at full pan/tilt; route the camera ribbon under the header to the lid notch.
 - `PORTS_ON_ROOM_RIGHT`: flip if you want the USB/Ethernet on the other side.
 
 ![parts](previews/parts.png)

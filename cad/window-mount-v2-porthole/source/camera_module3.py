@@ -44,10 +44,9 @@ def camera_module3_parts():
     # 15-pin 1 mm FPC connector on the back, at the bottom edge, and a short ribbon tail
     conn = box(-10.0, 10.0, y_back, y_back + 2.4, top - CAM_H, top - CAM_H + 5.5)
     latch = box(-9.0, 9.0, y_back + 2.4, y_back + 2.7, top - CAM_H + 0.3, top - CAM_H + 4.5)
-    # ribbon drops out of the cradle, then runs back toward the lid notch (flexible in reality)
-    zb = top - CAM_H - 6
-    ribbon = U(box(-8.0, 8.0, y_back + 0.8, y_back + 0.95, zb, top - CAM_H + 1),
-               box(-8.0, 8.0, y_back + 0.8, 16.0, zb - 0.15, zb))
+    # ribbon stub dropping out of the cradle; in reality it bends back under the display header
+    # to the notch in the lid, so only the first few mm are modelled
+    ribbon = box(-8.0, 8.0, y_back + 0.8, y_back + 0.95, top - CAM_H - 6, top - CAM_H + 1)
 
     return [
         ("cam_pcb", pcb, (0.08, 0.36, 0.16)),
