@@ -9,6 +9,7 @@ from mpl_toolkits.mplot3d.art3d import Poly3DCollection
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from wth_mount import *  # noqa
+from camera_module3 import camera_module3_parts
 
 OUT = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "previews")
 os.makedirs(OUT, exist_ok=True)
@@ -94,23 +95,46 @@ def assembly(pan=0, tilt=0, explode=0.0):
     mv = lambda s, dx=0, dy=0, dz=0: s.translate(V(dx, dy, dz))
     y_face = MULLION_DEPTH + BASE_WALL_T
     pi_top_z = BASE_TOP_T - PI_TOP_BELOW_SURFACE
-    pi = box(-PI_W / 2, PI_W / 2, y_face + PI_STANDOFF_H, y_face + PI_STANDOFF_H + 1.6, pi_top_z - PI_H, pi_top_z)
     m = -1 if PORTS_ON_ROOM_RIGHT else 1
-    cooler = box(*sorted((m * (-PI_W / 2 + 8), m * (-PI_W / 2 + 60))), y_face + PI_STANDOFF_H + 1.6, y_face + PI_STANDOFF_H + 9,
-                 pi_top_z - 50, pi_top_z - 8)
-    ports = box(*sorted((m * (PI_W / 2 - 21), m * (PI_W / 2 + 2))), y_face + PI_STANDOFF_H + 1.6, y_face + PI_STANDOFF_H + 17,
-                pi_top_z - 54, pi_top_z - 2)
+    yb = y_face + PI_STANDOFF_H                     # board underside
+    yt = yb + 1.6                                   # component side
+    bx = lambda x0, x1: tuple(sorted((m * (x0 - PI_W / 2), m * (x1 - PI_W / 2))))  # board x (0 = non-port edge)
+    bz = lambda v0, v1: (pi_top_z - v1, pi_top_z - v0)                              # board v (0 = GPIO edge)
+    def pbox(x0, x1, v0, v1, h0, h1):
+        a, b = bx(x0, x1); c, d = bz(v0, v1)
+        return box(a, b, yt + h0, yt + h1, c, d)
+    pcb = box(-PI_W / 2, PI_W / 2, yb, yt, pi_top_z - PI_H, pi_top_z)
+    header = pbox(7.1, 57.9, 0.9, 6.0, 0, 2.5)
+    pins = pbox(7.4, 57.6, 1.3, 5.6, 2.5, 8.5)
+    cooler = U(pbox(4, 60, 6, 50, 3, 5), *[pbox(5 + i * 3, 6.5 + i * 3, 7, 49, 5, 13) for i in range(8)],
+               pbox(30, 60, 12, 46, 5, 13.5))
+    fan = cyl(12, (m * (45 - PI_W / 2), yt + 13.5, pi_top_z - 29), (0, 1, 0), 0.6)
+    usb = U(pbox(70, 87.5, 2.5, 15.6, 0, 15.6), pbox(70, 87.5, 20.5, 33.6, 0, 15.6))
+    eth = pbox(66, 87.5, 38, 54, 0, 13.5)
+    small = U(pbox(6.8, 15.8, 50, 57.3, 0, 3.2), pbox(22.5, 29, 49.5, 57.3, 0, 3), pbox(35.9, 42.4, 49.5, 57.3, 0, 3))
+    fpc = U(pbox(44, 46.5, 46, 56, 0, 1.2), pbox(57, 59.5, 46, 56, 0, 1.2))
     mullion = box(-90, 90, 0, MULLION_DEPTH, -MULLION_FACE_H, 0)
-    glass = box(-90, 90, -6, -1, -MULLION_FACE_H - 40, 90)
-    cam = place_on_axis(U(P["camera_cradle"], camera_dummy()), pan, tilt)
+    cam_parts = [(mv(place_on_axis(sh, pan, tilt), dz=hood_z + 2.6 * e), "#%02x%02x%02x" % tuple(int(c * 255) for c in col), 1.0)
+                 for _, sh, col in camera_module3_parts()]
+    zc = DISP_CENTER_Z
+    y0 = HOOD_IN_D
+    dglass = cyl(17.8, (0, y0 - 2.2, zc), (0, 1, 0), 2.2)
+    dact = cyl(16.2, (0, y0 - 0.01, zc), (0, 1, 0), 0.02)
+    dpcb = U(cyl(DISP_PCB_D / 2, (0, y0 - 3.8, zc), (0, 1, 0), 1.6),
+             box(-DISP_TAB_W / 2, DISP_TAB_W / 2, y0 - 3.8, y0 - 2.2, zc - DISP_PCB_D / 2 - DISP_TAB_H, zc))
+    dupont = box(-9, 9, y0 - 3.8 - 14, y0 - 3.8, zc - DISP_PCB_D / 2 - DISP_TAB_H + 1, zc - DISP_PCB_D / 2 - DISP_TAB_H + 3.5)
+    disp = [(mv(dglass, dy=0.6 * e, dz=hood_z + e), "#0d0d12", 1.0), (mv(dact, dy=0.6 * e, dz=hood_z + e), "#1c2a44", 1.0),
+            (mv(dpcb, dy=0.6 * e, dz=hood_z + e), "#1f4e9e", 1.0), (mv(dupont, dy=0.6 * e, dz=hood_z + e), "#202020", 1.0)]
     items = [
         (mullion, "#b9bcc0", 1.0),
         (P["base_pi_mount"], "#82a267", 1.0),
-        (U(pi, cooler), "#2f7d3a", 1.0),
-        (ports, "#c8c8c8", 1.0),
+        (pcb, "#1b6b35", 1.0), (header, "#151515", 1.0), (pins, "#d4af37", 1.0),
+        (cooler, "#c9ccd0", 1.0), (fan, "#2a2a2a", 1.0),
+        (U(usb, eth), "#d0d0d0", 1.0), (small, "#b0b0b0", 1.0), (fpc, "#e8e2d0", 1.0),
         (mv(P["hood"], dz=hood_z + e), "#1e1e1e", 1.0),
         (mv(place_yoke(P["camera_yoke"], pan), dz=hood_z + 2.0 * e), "#e69138", 1.0),
-        (mv(cam, dz=hood_z + 2.6 * e), "#f1c232", 1.0),
+        (mv(place_on_axis(P["camera_cradle"], pan, tilt), dz=hood_z + 2.6 * e), "#f1c232", 1.0),
+        *cam_parts, *disp,
         (mv(P["screen_lid"], dy=1.2 * e, dz=hood_z + e), "#2c2c2c", 1.0),
         (mv(P["porthole_bezel"], dy=1.8 * e, dz=hood_z + e), "#c47a3a", 1.0),
         (mv(P["screen_retainer"], dy=0.6 * e, dz=hood_z + e), "#e69138", 1.0),
@@ -122,7 +146,7 @@ if __name__ == "__main__":
     fig = plt.figure(figsize=(9, 8), dpi=120)
     ax = fig.add_subplot(1, 1, 1)
     draw(ax, assembly(), 12, 72, size=(1000, 900))
-    ax.set_title("Room side (black hood, copper porthole, base in the v1 sage green #82A267)")
+    ax.set_title("Assembled with Pi 5 + Active Cooler, Camera Module 3 and round display")
     fig.tight_layout(); fig.savefig(os.path.join(OUT, "hero.png")); plt.close(fig)
 
     fig = plt.figure(figsize=(14, 7), dpi=110)
