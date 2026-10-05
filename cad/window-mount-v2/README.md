@@ -52,7 +52,7 @@ Everything fits the FlashForge Finder v1 (140 x 140 x 140). `step/` has the same
 
 ## Cable routing
 
-The cable routing diagram is in `../window-mount-v2-retro/previews/cable_routing.png` (same path for this version).
+The cable routing diagram is in `../window-mount-v2-porthole/previews/cable_routing.png` (same path for this version).
 1. **Camera ribbon.** Use a Pi 5 camera cable (22-pin to 15-pin). 200 mm is enough: the path is about 150 mm, which leaves slack for pan and tilt. From the camera's connector it drops out of the bottom of the cradle, lies flat over the turntable between the yoke arms and over the pan-lock screw (a low button-head M3 there gives the most room), and leaves through the notch at the bottom of the lid. Outside, it runs straight down the 5 mm gap between the base and the back of the Pi, folds around the Pi's bottom edge and plugs into one of the Pi's camera connectors there. Leave about 2 cm of slack inside the hood so the camera can pan and tilt.
 2. **Display wires.** The straight jumper plugs on the display's header point toward the camera; fold the wires back underneath them, along the floor and out of the same notch, then forward over the Pi's top edge into the GPIO pins: VCC pin 1, GND pin 6, SDA pin 19, SCL pin 23, CS pin 24, DC pin 22, RST pin 13. The plugs clear the camera mount by about 2.5 mm at full pan and tilt; for more room, solder the wires to the display or use right-angle plugs.
 3. **Seal the notch.** Once both cables are through, cover the rest of the notch with black foam or tape so no room light gets into the hood.
