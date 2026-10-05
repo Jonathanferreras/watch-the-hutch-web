@@ -518,7 +518,7 @@ if __name__ == "__main__":
     hz = BASE_TOP_T + FLOOR_T
     asm = cq.Assembly(name="wth_window_mount_v2")
     asm.add(parts["base_pi_mount"], name="base_pi_mount", color=cq.Color(0.42, 0.66, 0.31))
-    asm.add(hood_to_base(parts["hood"]), name="hood", color=cq.Color(0.2, 0.2, 0.2))
+    asm.add(hood_to_base(parts["hood"]), name="hood", color=cq.Color(130 / 255, 162 / 255, 103 / 255))
     asm.add(hood_to_base(place_yoke(parts["camera_yoke"])), name="camera_yoke", color=cq.Color(0.9, 0.57, 0.22))
     asm.add(hood_to_base(place_on_axis(parts["camera_cradle"])), name="camera_cradle", color=cq.Color(0.95, 0.76, 0.2))
     asm.add(hood_to_base(parts["screen_lid"]), name="screen_lid", color=cq.Color(0.12, 0.12, 0.12))
