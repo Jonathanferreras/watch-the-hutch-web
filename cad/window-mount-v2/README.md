@@ -18,6 +18,8 @@ A mullion cap like v1.0 with a new Pi 5 mount on the room face, a light-tight ca
 
 Everything fits the FlashForge Finder v1 (140 x 140 x 140). `step/` has the same parts as STEP for Fusion 360, plus `assembly_all_parts.step` with every part in its installed position.
 
+`WTH_Window_Mount_v2_Fusion.zip` is a Fusion 360 script that uploads `assembly_all_parts.step` as one design, with every part as a component inside it. Fusion for personal use allows only 10 editable documents, so don't upload the parts as separate files; to get one part out, right-click its component and use Save As Mesh.
+
 ## Printing (Finder v1)
 
 - PLA (the Finder v1 bed is unheated). Print the hood, lid and retainer in **black** so the hood doesn't glow or reflect inside.
