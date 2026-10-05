@@ -31,7 +31,7 @@ def view_matrix(elev, azim):
     return np.vstack([right, up, d])
 
 
-def raster(items, elev, azim, size=(900, 700)):
+def raster(items, elev, azim, size=(900, 700), want_proj=False):
     """small z-buffer rasterizer (orthographic, flat shaded, with outlines)"""
     M = view_matrix(elev, azim)
     T, Cl = [], []
@@ -81,6 +81,8 @@ def raster(items, elev, azim, size=(900, 700)):
     edge[1:, :] |= np.abs(np.diff(d, axis=0)) > 1.5
     edge[:, 1:] |= np.abs(np.diff(d, axis=1)) > 1.5
     img[edge] *= 0.25
+    if want_proj:
+        return img, (M, sc, cx, cy, W, H)
     return img
 
 

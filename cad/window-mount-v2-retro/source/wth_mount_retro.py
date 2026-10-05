@@ -175,7 +175,7 @@ def make_lid():
     cuts += [cyl(M2_TAP / 2, (sx * ret_x, y0 - DISP_STACK - 1, zc), (0, 1, 0), DISP_STACK + 2.5) for sx in (-1, 1)]
     for (x, z) in hood_corner_bosses():
         cuts.append(countersink((x, y1, z), direction=(0, -1, 0), depth=6))
-    cuts.append(box(-12, 12, y0 - 1, y1 + 1, -FLOOR_T - 1, 1.0))
+    cuts.append(box(-12, 12, y0 - 1, y1 + 1, -FLOOR_T - 1, 4.0))  # 4 mm above the floor: camera ribbon + display wires
     return C(l, *cuts)
 
 

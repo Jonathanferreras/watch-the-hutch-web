@@ -335,7 +335,7 @@ def make_lid():
     for (x, z) in hood_corner_bosses():
         cuts.append(countersink((x, y1, z), direction=(0, -1, 0), depth=6))
     # cable exit (camera ribbon + display wires): seal with black tape/foam after routing
-    cuts.append(box(-12, 12, y0 - 1, y1 + 1, -FLOOR_T - 1, 1.0))
+    cuts.append(box(-12, 12, y0 - 1, y1 + 1, -FLOOR_T - 1, 4.0))  # 4 mm above the floor: camera ribbon + display wires
     return C(l, *cuts)
 
 
