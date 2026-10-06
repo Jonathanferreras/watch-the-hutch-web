@@ -12,8 +12,8 @@ A mullion cap like v1.0 with a new Pi 5 mount on the room face, a light-tight ca
 | pi5_plate | `stl/pi5_plate.stl` | 93 x 64 x 9 | Only if you keep the v1.0 base: a Pi 5 plate with 4 countersunk M3 holes to screw/glue onto the old base's front face. |
 | hood | `stl/hood.stl` | 87 x 68.5 x 50 | Box open toward the glass with a gasket flange. Slots let it slide 7 mm toward/away from the glass. |
 | camera_yoke | `stl/camera_yoke.stl` | 42 x 42 x 34 | Pan stage: turns on a pin in the hood floor, ±25°, locked by one M3 screw in an arc slot. |
-| camera_cradle | `stl/camera_cradle.stl` | 29 x 20 x 28.5 | Tilt stage: camera screws on the front, ±25° tilt, held by two M3 screws through the yoke arms. |
-| screen_lid | `stl/screen_lid.stl` | 79 x 64.5 x 7 | Back of the hood facing the room, with a 33 mm window for the round display and a cable exit at the bottom. |
+| camera_cradle | `stl/camera_cradle.stl` | 28.5 x 20 x 29 | Tilt stage: camera screws on the front, ±25° tilt, held by two M3 screws through the yoke arms. |
+| screen_lid | `stl/screen_lid.stl` | 79 x 64.5 x 6.8 | Back of the hood facing the room, with a 33 mm window for the round display and a cable exit at the bottom. |
 | screen_retainer | `stl/screen_retainer.stl` | 56.5 x 8 x 3 | Clamps the display into the lid. |
 
 Everything fits the FlashForge Finder v1 (140 x 140 x 140). `step/` has the same parts as STEP for Fusion 360, plus `assembly_all_parts.step` with every part in its installed position.

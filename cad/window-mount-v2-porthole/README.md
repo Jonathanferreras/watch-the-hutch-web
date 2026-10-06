@@ -17,10 +17,10 @@ Underneath the styling it is a mullion cap like v1.0 with a new Pi 5 mount on th
 | pi5_plate | `stl/pi5_plate.stl` | 93 x 64 x 9 | Only if you keep the v1.0 base: a Pi 5 plate with 4 countersunk M3 holes to screw/glue onto the old base's front face. |
 | hood | `stl/hood.stl` | 87 x 68.5 x 56 | Rounded box open toward the glass with a gasket flange; the back runs 6 mm past the lid as a screen frame. Slots let it slide 7 mm toward/away from the glass. |
 | camera_yoke | `stl/camera_yoke.stl` | 42 x 42 x 34 | Pan stage: turns on a pin in the hood floor, ±25°, locked by one M3 screw in an arc slot. |
-| camera_cradle | `stl/camera_cradle.stl` | 29 x 20 x 28.5 | Tilt stage: camera screws on the front, ±25° tilt, held by two M3 screws through the yoke arms. |
-| screen_lid | `stl/screen_lid.stl` | 75.5 x 59.5 x 7 | Sits inside the hood frame facing the room: 33 mm display window, grille slots, engraved badge, cable exit at the bottom. |
-| screen_retainer | `stl/screen_retainer.stl` | 56.5 x 8 x 3 | Clamps the display into the lid. |
-| porthole_bezel | `stl/porthole_bezel.stl` | 44 x 44 x 4 | Riveted ring around the display, located by 3 filament dowels and glued. |
+| camera_cradle | `stl/camera_cradle.stl` | 28.5 x 20 x 29 | Tilt stage: camera screws on the front, ±25° tilt, held by two M3 screws through the yoke arms. |
+| screen_lid | `stl/screen_lid.stl` | 75.5 x 59.5 x 6.6 | Sits inside the hood frame facing the room: 33 mm display window, grille slots, engraved badge, cable exit at the bottom. |
+| screen_retainer | `stl/screen_retainer.stl` | 55 x 8 x 3 | Clamps the display into the lid. |
+| porthole_bezel | `stl/porthole_bezel.stl` | 44 x 44 x 3.9 | Riveted ring around the display, located by 3 filament dowels and glued. |
 
 Everything fits the FlashForge Finder v1 (140 x 140 x 140).
 
