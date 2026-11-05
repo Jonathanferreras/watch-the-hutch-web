@@ -108,7 +108,7 @@ localStorage "bridge-state" ──listeners/storage─┘            │
                                                          └─ BridgeTrafficOverview    (2× TrafficCard)
 ```
 
-Writes go the other way: the admin form calls `useUpdateBridgeState()`, then `bridgeStateService.updateCurrentBridgeState(payload)`, then the repository. In Firebase, that is a `writeBatch` that updates `bridgeState/current` and appends a document to `events`.
+Writes go the other way: the admin form calls `useUpdateBridgeState()`, then `bridgeStateService.updateCurrentBridgeState(payload)`, then the repository. In Firebase, that is a `writeBatch` that sets `bridgeState/current` (with `merge: true`, so a fresh project needs no seeding) and appends a document to `events`. The edge device writes the same document from outside the app (see [domain-model.md](./domain-model.md#device-writes-and-freshness)); the page shows it through `getDisplayedBridgeState`, which turns a stale device state into unknown.
 
 `BridgeStateExperience` is **presentation-only**. It takes a `CurrentBridgeState` prop and has no idea where the state came from. Simulation playback reuses it by passing a synthetic frame (see [domain-model.md](./domain-model.md#simulations)). Keep it that way: don't make components inside the experience fetch their own data.
 
@@ -128,5 +128,5 @@ The admin login needs a real Firebase project. You need the four `NEXT_PUBLIC_FI
 
 - `lib/firebase/sdk.ts` sets up the app once (`getApps().length > 0 ? getApp() : initializeApp(config)`) from `NEXT_PUBLIC_FIREBASE_API_KEY`, `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN`, `NEXT_PUBLIC_FIREBASE_PROJECT_ID` and `NEXT_PUBLIC_FIREBASE_APP_ID`.
 - `lib/firebase/db.ts` and `lib/firebase/auth.ts` export the `db` and `auth` singletons. Import those, and never call `getFirestore()` or `getAuth()` anywhere else.
-- `lib/firebase/collections.ts` holds the collection names: `bridgeState`, `events` and `simulations`. Add new collection names there.
+- `lib/firebase/collections.ts` holds the collection names: `bridgeState`, `events`, `simulations`, and the device-only `deviceEvents` and `devices`. Security rules live in `firestore.rules` at the repo root. Add new collection names there.
 - `.env*` is gitignored. Never commit config values, even though Firebase client keys are technically public.

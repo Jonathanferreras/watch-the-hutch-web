@@ -37,6 +37,7 @@ function read(): CurrentBridgeState | null {
 
     return {
         ...parsed,
+        acceptsDeviceUpdates: parsed.acceptsDeviceUpdates ?? true,
         updatedAt: new Date(parsed.updatedAt),
     };
 }
@@ -85,5 +86,15 @@ export const localStorageBridgeStateRepository: BridgeStateRepository = {
         };
 
         write(next);
+    },
+
+    async setAcceptsDeviceUpdates(accepts: boolean) {
+        const current = read();
+
+        // There's no device in Local (Demo) mode, so there's nothing to hand back to
+        // until a state exists.
+        if (!current) return;
+
+        write({ ...current, acceptsDeviceUpdates: accepts });
     },
 };

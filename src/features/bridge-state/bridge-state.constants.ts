@@ -40,3 +40,9 @@ export const TRAFFIC_CONFIG: Record<
         speed: 0,
     },
 };
+/**
+ * The edge device rewrites bridgeState/current at least every 10 minutes. A device state
+ * older than this means the device or its connection is down, so the site stops showing it
+ * as current.
+ */
+export const DEVICE_STALE_AFTER_MINUTES = 25;

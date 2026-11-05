@@ -4,21 +4,20 @@ Read this before you assume something works. Each item says where in the code it
 
 ## Security and access
 
-- **The admin gate only runs in the browser.** `(protected)/layout.tsx` redirects in the browser, and simulation ownership is also checked in the browser (`SimulationPlayback`, `listSimulationsForUser`). There are **no Firestore security rules in this repo**, so all real protection depends on rules set in the Firebase console. Anyone holding the public client config can call Firestore directly.
+- **The admin gate only runs in the browser.** `(protected)/layout.tsx` redirects in the browser, and simulation ownership is also checked in the browser (`SimulationPlayback`, `listSimulationsForUser`). Real protection comes from `firestore.rules` at the repo root, which only takes effect once it is deployed (`firebase deploy --only firestore:rules`, or pasted into the console). Until then, anyone holding the public client config can call Firestore directly. The rules treat every signed-in user as an admin.
 - **Simulation lists are filtered in the browser.** `firebaseSimulationRepository.listSimulationsForUser` fetches **every** simulation ordered by `createdAt`, then filters by `createdBy` in JavaScript. It should use `where("createdBy", "==", userId)`, plus a composite index if it keeps the ordering.
 
 ## Data
 
-- **`bridgeState/current` must already exist.** The Firebase write uses `batch.update`, which fails on a missing document. A new Firebase project needs this document seeded by hand.
-- **The `BridgeStateEvent` type is out of date.** It has a single `traffic`/`trafficConfidence` field, but north/south fields are what get written. Nothing reads `events` yet.
+- **Nothing reads `events` yet.** Both the admin form and the edge device append to it.
 - **Local mode writes no events.** The `localStorage` repository only stores the current state.
 - **The data source is per browser.** "Local (Demo)" is stored in `localStorage["bridge-data-source"]`. It changes only the admin's browser, never what the public sees.
-- **`acceptsDeviceUpdates` isn't used.** It's written as `false` by admin updates, and nothing reads it or sets it back to `true`.
+- **An admin override stands until someone hands back.** Admin saves set `acceptsDeviceUpdates` to `false`; only the dashboard's "Hand back to device" button sets it to `true`. There's no automatic timeout.
 - **Simulations follow the bridge data-source toggle.** There's no separate switch. Simulations saved in Local mode don't appear in Live mode, and the other way round.
 
 ## Product
 
-- **There's no edge or device integration yet.** The `device` source type exists, but nothing writes it.
+- **Device history isn't shown.** The edge device writes `deviceEvents` and `devices/{id}` (admin-readable), but no page reads them yet, and there are no daily aggregates.
 - **The Navbar has a placeholder "Install App" button** with no handler, and there's no PWA manifest or service worker. The Navbar has no links (the About link was removed).
 - **Dark mode is turned off.** The `prefers-color-scheme` block in `globals.css` is commented out.
 - `BridgeStatusCard` and parts of the dashboard use deliberately plain admin styling, including inline `style={{ maxWidth: "768px" }}` and `<br />` spacers.

@@ -2,9 +2,12 @@
 
 import { useBridgeState } from "@/src/features/bridge-state/hooks/use-bridge-state";
 import { BridgeStateExperience } from "@/src/features/bridge-state/components/bridge-state-experience";
+import { useNow } from "@/src/features/bridge-state/hooks/use-now";
+import { formatStaleNotice, getDisplayedBridgeState } from "@/src/features/bridge-state/bridge-state.freshness";
 
 export default function Home() {
   const { data, loading, error } = useBridgeState();
+  const now = useNow();
 
   if (loading) {
     return (
@@ -34,5 +37,12 @@ export default function Home() {
     );
   }
 
-  return <BridgeStateExperience state={data} />;
+  const { state, staleMinutes } = getDisplayedBridgeState(data, now);
+
+  return (
+    <BridgeStateExperience
+      state={state}
+      notice={staleMinutes !== null ? formatStaleNotice(staleMinutes) : null}
+    />
+  );
 }
