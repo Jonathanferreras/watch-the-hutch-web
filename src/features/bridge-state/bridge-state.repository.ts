@@ -14,6 +14,9 @@ export interface BridgeStateRepository {
     updateCurrentBridgeState(
         update: CurrentBridgeStatePayload
     ): Promise<void>;
+
+    /** Lets the edge device write bridgeState/current again (true) or holds it off (false). */
+    setAcceptsDeviceUpdates(accepts: boolean): Promise<void>;
 }
 
 export function getBridgeStateRepository(): BridgeStateRepository {

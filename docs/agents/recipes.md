@@ -67,14 +67,13 @@ Create `src/app/<name>/page.tsx`. There's no `AuthProvider` outside `/admin`, so
 4. Add the scene to `renderScene` and give it a sentence in `getBridgeSceneSummary` for screen readers.
 5. Take colors from `TRAFFIC_CONFIG` when they mean something about traffic.
 
-## Prepare for device (Pi) writes
+## Change what the device writes
 
-This isn't built yet. If you're asked to start on it:
+The edge device writes Firestore directly (see [domain-model.md](./domain-model.md#device-writes-and-freshness)); its side lives in `wth-edge-device`'s `wth_edge/publishers/`.
 
-- The device should write the **same `CurrentBridgeStatePayload` shape** with `sourceType: "device"`, a stable `sourceId`, real confidence values from 0 to 1, and the invariants in [domain-model.md](./domain-model.md#invariants).
-- Respect `acceptsDeviceUpdates`. Admin writes set it to `false` so that a manual override wins. Decide how and when it goes back to `true`, which nothing does today.
-- The Firebase update uses `batch.update` on `bridgeState/current`, which fails if the document doesn't exist. Either seed the document or switch to `set(..., { merge: true })`.
-- A server-side ingestion endpoint, such as a Next route handler using the Firebase Admin SDK, would be a new layer. Read the Next 16 route handler docs first and keep secrets out of `NEXT_PUBLIC_*`.
+- Keep the device's fields in the `CurrentBridgeStatePayload` shape. A new field needs a default in `normalizeBridgeState` so older documents still load.
+- A new device-only collection gets a name in `collections.ts` and a `match` block in `firestore.rules` (browsers read at most; the device's service account bypasses the rules).
+- Changing the device's heartbeat means changing `DEVICE_STALE_AFTER_MINUTES` to match (about 2.5 times the heartbeat).
 
 ## Before you open a PR
 

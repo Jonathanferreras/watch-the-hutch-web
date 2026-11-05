@@ -35,7 +35,7 @@ This is the one live record. It's stored at Firestore `bridgeState/current` (`CU
 | `northBoundTraffic` / `northBoundTrafficConfidence` | `BridgeTraffic` / `number` | Each direction is tracked independently |
 | `southBoundTraffic` / `southBoundTrafficConfidence` | `BridgeTraffic` / `number` | |
 | `estimatedWaitTime` | `BridgeEstimatedWaitTime \| null` | Only while the bridge is moving or open |
-| `acceptsDeviceUpdates` | `boolean` | Set to `false` by admin writes. Meant to stop the Pi from overwriting a manual override (no code reads it yet). |
+| `acceptsDeviceUpdates` | `boolean` | Set to `false` by admin writes, back to `true` by the dashboard's "Hand back to device". While `false` the edge device doesn't write this document. The device never writes the field, so a missing value normalizes to `true`. |
 | `updatedAt` | `Date` | Firestore `serverTimestamp()` on write, converted to a `Date` on read |
 
 `CurrentBridgeStatePayload = Omit<CurrentBridgeState, "id" | "updatedAt">` is the write shape. Repositories add `id` and `updatedAt` themselves.
@@ -97,11 +97,17 @@ The thresholds live in `TrafficCard.getConfidenceVisual`:
 
 `BridgeEstimatedWaitTimeStatus` updates every 60 seconds and shows the remaining minutes, a progress bar, "Started" and "ETA". The admin editor keeps an existing wait time **as-is** if the minutes haven't changed. That way, saving the form doesn't restart the countdown.
 
+## Device writes and freshness
+
+The edge device (`wth-edge-device`, `publisher.driver = "firestore"`) writes `bridgeState/current` with a service account, which bypasses the security rules. It writes `sourceType: "device"`, `sourceId` = its device id, the position and traffic fields with real confidences, `estimatedWaitTime` in the `BridgeEstimatedWaitTime` shape, and a server `updatedAt`. It writes a new position at once, a traffic change once it has held for 60 s, and the unchanged state every 10 minutes as a heartbeat. It also appends to `events` on each change, and writes `deviceEvents` (phase changes, boat crossings) and `devices/{id}` (telemetry).
+
+`getDisplayedBridgeState` (`bridge-state.freshness.ts`) is what the public page shows: a **device** state older than `DEVICE_STALE_AFTER_MINUTES` (25) is shown as unknown, with a notice, instead of as a position that may have changed. Admin states never go stale.
+
 ## Event history (`events` collection)
 
 Each Firebase `updateCurrentBridgeState` also writes an event document in the same batch: `id`, `sourceId`, `sourceType`, `position`, `positionConfidence`, north/south traffic and their confidences, `occurredAt` and `createdAt` (server timestamps).
 
-> ⚠️ The exported `BridgeStateEvent` type still has a single `traffic` / `trafficConfidence` field, so it doesn't match what is written. Nothing reads `events` yet. If you start reading it, fix the type first.
+The edge device writes the same shape, with `sourceType: "device"`, whenever position or traffic changes. Nothing reads `events` yet.
 
 The `localStorage` repository doesn't record events.
 

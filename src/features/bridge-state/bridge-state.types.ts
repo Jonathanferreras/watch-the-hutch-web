@@ -55,8 +55,11 @@ export type BridgeStateEvent = {
   position: BridgePosition;
   positionConfidence: number;
 
-  traffic: BridgeTraffic;
-  trafficConfidence: number;
+  northBoundTraffic: BridgeTraffic;
+  northBoundTrafficConfidence: number;
+
+  southBoundTraffic: BridgeTraffic;
+  southBoundTrafficConfidence: number;
 
   occurredAt: Date;
   createdAt: Date;

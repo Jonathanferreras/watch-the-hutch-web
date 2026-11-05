@@ -26,8 +26,13 @@ const updateCurrentBridgeState = async (
   );
 };
 
+const setAcceptsDeviceUpdates = async (accepts: boolean) => {
+  return getBridgeStateRepository().setAcceptsDeviceUpdates(accepts);
+};
+
 export const bridgeStateService = {
   getCurrentBridgeState,
   subscribeToBridgeState,
   updateCurrentBridgeState,
+  setAcceptsDeviceUpdates,
 };
